@@ -1,8 +1,10 @@
 import { PrismaClient } from "@prisma/client";
+import { seedTax } from "./tax.seed";
 
 const prisma = new PrismaClient();
 async function main() {
-    console.log("Seeding database...");
+    await prisma.$executeRaw`TRUNCATE TABLE "makes" RESTART IDENTITY CASCADE;`;
+    await seedTax(prisma)
 }
 
 main().catch(async (e) => {
