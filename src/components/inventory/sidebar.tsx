@@ -41,49 +41,67 @@ const Sidebar = ({ minMaxValue, searchParams }: SidebarProps) => {
   );
 
   useEffect(() => {
-    const filterCount = Object.entries(searchParams as Record<string, string>).filter(
-        ([key, value]) => key !== "page" && value).length
+    const filterCount = Object.entries(
+      searchParams as Record<string, string>
+    ).filter(([key, value]) => key !== "page" && value).length;
     setFilterCount(filterCount);
-  }, [searchParams])
+  }, [searchParams]);
 
   const clearFilters = () => {
-    const url = new URL(routes.inventory,process.env.NEXT_PUBLIC_APP_URL);
+    const url = new URL(routes.inventory, process.env.NEXT_PUBLIC_APP_URL);
     window.location.replace(url.toString());
     setFilterCount(0);
-}
-  return(
-    	<div className="py-4 w-[21.25rem] bg-white border-r border-muted hidden lg:block">
-            <div>
-				<div className="text-lg font-semibold flex justify-between px-4">
-					<span>Filters</span>
-                    <button
-                        type="button"
-                        onClick={clearFilters}
-                        aria-disabled={filterCount === 0}
-                        className={cn(`text-sm text-gray-500`,
-                            !filterCount ? "disabled opacity-50 pointer-events-none cursor-default"
-                            : "hover:underline cursor-pointer"
-                        )}
-                    >
-                        Clear all filters 
-                        {filterCount ? `(${filterCount})` : null}
-                    </button>
-                </div>
-                <div className="mt-2" />
-            </div>
-            <div className="p-4">
-                <SearchInput placeholder="Search for car..."
-                className="w-full px-3 py-2 border rounded-md
-                focus:outline-hidden focus:ring-2 focus:ring-sky-500"/>
-            </div>
-            <div className="p-4 space-y-2">
-                <TaxonomyFilters
-					searchParams={searchParams}
-					handleChange={() => {}}
-				/>
-            </div>
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setQueryStates({
+      [name]: value || null,
+    })
+
+    if (name === "make" ) {
+      setQueryStates({
+        model: null,
+        modelVariant: null,
+      })
+    }
+
+    router.refresh();
+  }
+  return (
+    <div className="py-4 w-[21.25rem] bg-white border-r border-muted hidden lg:block">
+      <div>
+        <div className="text-lg font-semibold flex justify-between px-4">
+          <span>Filters</span>
+          <button
+            type="button"
+            onClick={clearFilters}
+            aria-disabled={filterCount === 0}
+            className={cn(
+              `text-sm text-gray-500`,
+              !filterCount
+                ? "disabled opacity-50 pointer-events-none cursor-default"
+                : "hover:underline cursor-pointer"
+            )}
+          >
+            Clear all filters
+            {filterCount ? `(${filterCount})` : null}
+          </button>
         </div>
-  )
+        <div className="mt-2" />
+      </div>
+      <div className="p-4">
+        <SearchInput
+          placeholder="Search for car..."
+          className="w-full px-3 py-2 border rounded-md
+                focus:outline-hidden focus:ring-2 focus:ring-sky-500"
+        />
+      </div>
+      <div className="p-4 space-y-2">
+        <TaxonomyFilters searchParams={searchParams} handleChange={handleChange} />
+      </div>
+    </div>
+  );
 };
 
 export default Sidebar;

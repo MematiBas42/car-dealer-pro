@@ -1,10 +1,29 @@
-import { Colour, FuelType, OdoUnit, Transmission } from "@prisma/client";
+import { Colour, CurrencyCode, FuelType, OdoUnit, Transmission } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+interface FormatPriceArgs {
+	price: number | null;
+	currency: CurrencyCode | null;
+}
+
+export function formatPrice({ price, currency }: FormatPriceArgs) {
+	if (!price) return "0";
+
+	const formatter = new Intl.NumberFormat("en-GB", {
+		style: "currency",
+		currencyDisplay: "narrowSymbol",
+		...(currency && { currency }),
+		maximumFractionDigits: 0,
+	});
+
+	return formatter.format(price / 100);
+}
+
 
 export function formatNumber(
 	num: number | null,
