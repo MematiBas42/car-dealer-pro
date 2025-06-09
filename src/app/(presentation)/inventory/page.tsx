@@ -1,7 +1,8 @@
 import CarCard from "@/components/inventory/car-card";
 import CarsList from "@/components/inventory/cars-list";
+import Sidebar from "@/components/inventory/sidebar";
 import CustomPagination from "@/components/shared/custom-pagination";
-import { OFFSET } from "@/config/constants";
+import { CARS_PER_PAGE } from "@/config/constants";
 import { routes } from "@/config/routes";
 import { AwaitedPageProps, Favourites, PageProps } from "@/config/types";
 import { prisma } from "@/lib/prisma";
@@ -20,7 +21,7 @@ const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
   const page = validPage ? validPage : 1;
 
   // cal the offset for pagination
-  const offset = (page - 1) * OFFSET;
+  const offset = (page - 1) * CARS_PER_PAGE;
 
   return prisma.classified.findMany({
     where: {
@@ -32,21 +33,27 @@ const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
       }
     },
     skip: offset,
-    take: OFFSET,
+    take: CARS_PER_PAGE,
   });
 };
 
 const InventoryPage = async (props: PageProps) => {
   const searchParams = await props.searchParams;
   const cars = await getInventory(searchParams);
-  const count = await prisma.classified.count();
+  const count = await prisma.classified.count({
+    where: {},
+  });
   const sourceId = await getSourceId();
   const favs = await redis.get<Favourites>(sourceId ?? "");
 
-  const totalPages = Math.ceil(count / OFFSET);
+  const totalPages = Math.ceil(count / CARS_PER_PAGE);
   return (
     <div className="flex">
       {/* <Sidebar/> */}
+      <Sidebar 
+        minMaxValue={null}
+        searchParams={searchParams}
+      />
       <div className="flex-1 p-4 bg-white">
         <div className="flex space-y-2 flex-col lg:flex-row items-center justify-center pb-4 -mt-1">
           <div className="flex justify-between items-center w-full">
@@ -59,7 +66,7 @@ const InventoryPage = async (props: PageProps) => {
             baseURL={routes.inventory}
             totalPages={totalPages}
             styles={{
-              paginationRoot: "justify-end lg:hidden pt-12",
+              paginationRoot: "justify-end  lg:flex",
               paginationPrevious: "",
               paginationNext: "",
               paginationLink: "border active:border",
