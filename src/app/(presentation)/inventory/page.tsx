@@ -1,9 +1,15 @@
+import CarCard from '@/components/inventory/car-card'
+import CarsList from '@/components/inventory/cars-list'
 import { AwaitedPageProps, PageProps } from '@/config/types'
 import { prisma } from '@/lib/prisma'
 import React from 'react'
 
 const getInventory = async(searchParams: AwaitedPageProps['searchParams']) => {
-    return []
+    return prisma.classified.findMany({
+        include: {
+            images: true,
+        }
+    })
 }
 
 const InventoryPage = async (props: PageProps) => {
@@ -11,9 +17,9 @@ const InventoryPage = async (props: PageProps) => {
     const cars = await getInventory(searchParams)
     const count  = await prisma.classified.count()
   return (
-    <div>
-      Invve
-    </div>
+    <>
+        <CarsList cars={cars} />
+    </>
   )
 }
 
