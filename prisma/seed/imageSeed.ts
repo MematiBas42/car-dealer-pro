@@ -1,7 +1,7 @@
 import { imageSources } from "@/config/constants";
 import { faker } from "@faker-js/faker";
 import { Prisma, PrismaClient } from "@prisma/client";
-
+import { createPngDataUri } from "unlazy/thumbhash"; 
 export async function seedImage(prisma: PrismaClient) {
     const cars = await prisma.classified.findMany({})
 
@@ -13,7 +13,10 @@ export async function seedImage(prisma: PrismaClient) {
             classified: {
                 connect: { id: carId }
             },
-            blurhash:'DNcFG4g9lXWTewfX/Wndj8Y='
+            blurhash:createPngDataUri('DNcFG4g9lXWTewfX/Wndj8Y=')
         }
+    await prisma.image.create({
+        data: image
+    })
     }
 }
