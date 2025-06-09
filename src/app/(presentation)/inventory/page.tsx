@@ -55,7 +55,7 @@ const InventoryPage = async (props: PageProps) => {
         searchParams={searchParams}
       />
       <div className="flex-1 p-4 bg-white">
-        <div className="flex space-y-2 flex-col lg:flex-row items-center justify-center pb-4 -mt-1">
+        <div className="flex space-y-2 flex-col xl:flex-row items-center justify-center pb-4 -mt-1">
           <div className="flex justify-between items-center w-full">
             <h2 className="text-sm md:text-base lg:text-xl font-semibold min-w-fit">
               {count} Cars Available
@@ -66,7 +66,7 @@ const InventoryPage = async (props: PageProps) => {
             baseURL={routes.inventory}
             totalPages={totalPages}
             styles={{
-              paginationRoot: "justify-end  lg:flex",
+              paginationRoot: "justify-end lg:flex",
               paginationPrevious: "",
               paginationNext: "",
               paginationLink: "border active:border",

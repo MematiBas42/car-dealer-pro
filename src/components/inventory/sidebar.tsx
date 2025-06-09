@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { parseAsString, useQueryStates } from "nuqs";
 import React, { useEffect, useState } from "react";
+import SearchInput from "../shared/search-input";
+import TaxonomyFilters from "./TaxonomyFilters";
 
 interface SidebarProps {
   minMaxValue: any;
@@ -70,7 +72,15 @@ const Sidebar = ({ minMaxValue, searchParams }: SidebarProps) => {
                 <div className="mt-2" />
             </div>
             <div className="p-4">
-                <SearchInput/>
+                <SearchInput placeholder="Search for car..."
+                className="w-full px-3 py-2 border rounded-md
+                focus:outline-hidden focus:ring-2 focus:ring-sky-500"/>
+            </div>
+            <div className="p-4 space-y-2">
+                <TaxonomyFilters
+					searchParams={searchParams}
+					handleChange={() => {}}
+				/>
             </div>
         </div>
   )
