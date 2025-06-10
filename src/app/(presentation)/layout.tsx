@@ -1,3 +1,4 @@
+import PublicLayout from '@/components/layouts/public-payout';
 import React from 'react'
 
 
@@ -6,9 +7,11 @@ type Props = {
 }
 const PresentationLayout = ({children}: Props) => {
   return (
-    <div>
-      {children}
-    </div>
+    <PublicLayout>
+ {children}
+    </PublicLayout>
+     
+    
   )
 }
 
