@@ -42,6 +42,7 @@ export const RangeFilter = (props: RangeFilterProps) => {
 				iterator++;
 			}
 
+
 			if (currency) {
 				state.push({
 					label: formatPrice({

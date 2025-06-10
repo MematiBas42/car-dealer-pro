@@ -1,5 +1,6 @@
 import CarCard from "@/components/inventory/car-card";
 import CarsList from "@/components/inventory/cars-list";
+import DialogFilters from "@/components/inventory/DialogFilters";
 import Sidebar from "@/components/inventory/sidebar";
 import CustomPagination from "@/components/shared/custom-pagination";
 import { CARS_PER_PAGE } from "@/config/constants";
@@ -193,6 +194,8 @@ const InventoryPage = async (props: PageProps) => {
     },
     _min: {
       year: true,
+      price: true,
+      odoReading: true,
     }, 
     _max: {
       price: true,
@@ -209,18 +212,24 @@ const InventoryPage = async (props: PageProps) => {
       {/* <Sidebar/> */}
       <Sidebar minMaxValue={minMaxresult} searchParams={searchParams} />
       <div className="flex-1 p-4 bg-white">
-        <div className="flex space-y-2 flex-col xl:flex-row items-center justify-center pb-4 -mt-1">
+        {/* add xl flex-row if u want */}
+        <div className="flex space-y-2 flex-col items-center justify-center pb-4 -mt-1">
           <div className="flex justify-between items-center w-full">
             <h2 className="text-sm md:text-base lg:text-xl font-semibold min-w-fit">
               {count} Cars Available
             </h2>
             {/* <DialogFilters/> */}
+            <DialogFilters 
+              searchParams={searchParams}
+              minMaxValue={minMaxresult}
+              count={count}
+            />
           </div>
           <CustomPagination
             baseURL={routes.inventory}
             totalPages={totalPages}
             styles={{
-              paginationRoot: "justify-end lg:flex",
+              paginationRoot: "justify-end hidden lg:flex",
               paginationPrevious: "",
               paginationNext: "",
               paginationLink: "border active:border",
@@ -229,6 +238,18 @@ const InventoryPage = async (props: PageProps) => {
           />
           <CarsList cars={cars} favourites={favs ? favs.ids : []} />
         </div>
+
+        <CustomPagination 
+          baseURL={routes.inventory}
+          totalPages={totalPages}
+          styles={{
+            paginationRoot: "justify-center lg:hidden pt-12",
+            paginationPrevious: "",
+            paginationNext: "",
+            paginationLink: "border active:border",
+            paginationLinkActive: "bg-sky-500 text-white",
+          }}
+        />
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import {
   formatFuelType,
   formatNumber,
   formatOdometerUnit,
+  formatPrice,
   formatTransmission,
 } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
@@ -76,7 +77,7 @@ const CarCard = ({ car, favourites }: CarCardProps) => {
               src={car.images[0]?.src || "/placeholder.png"}
               alt={car.images[0]?.alt || "Car Image"}
               fill={true}
-              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
               quality={25}
             />
           </Link>
@@ -87,7 +88,10 @@ const CarCard = ({ car, favourites }: CarCardProps) => {
           />
           <div className="absolute top-2.5 right-3.5 bg-primary text-slate-50 font-bold px-2 py-1 rounded">
             <div className="text-xs lg:text-base xl:text-lg font-semibold">
-              {car.price}
+              {formatPrice({
+                price: car.price,
+                currency:  "EUR",
+              })}
             </div>
           </div>
         </div>
