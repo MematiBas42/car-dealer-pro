@@ -1,3 +1,4 @@
+import CarView from "@/components/car/car-view";
 import { routes } from "@/config/routes";
 import { PageProps } from "@/config/types";
 import { prisma } from "@/lib/prisma";
@@ -21,10 +22,12 @@ const CarPage = async (props: PageProps) => {
   });
 
   if (!car) notFound();
-  if (car.status !== ClassifiedStatus.SOLD) {
+  if (car.status === ClassifiedStatus.SOLD) {
     redirect(routes.notAvailable(slug));
   }
-  return <div>page car</div>;
+  return <CarView
+   {...car}
+  />;
 };
 
 export default CarPage;
