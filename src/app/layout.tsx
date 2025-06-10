@@ -20,8 +20,8 @@ const roboto = Roboto({
 	display: "swap",
 });
 export const metadata: Metadata = {
-  title: "Car dealership",
-  description: "A car dealership website built with Next.js and Nuqs",
+  title: "Meat Motors",
+  description: "Love meat? Love motors? We do too! Welcome to Meat Motors",
 };
 
 export default function RootLayout({
