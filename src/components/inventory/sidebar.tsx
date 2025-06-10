@@ -6,7 +6,7 @@ import { parseAsString, useQueryStates } from "nuqs";
 import React, { useEffect, useState } from "react";
 import SearchInput from "../shared/search-input";
 import TaxonomyFilters from "./TaxonomyFilters";
-import RangeFilters from "./RangeFilters";
+import { RangeFilter } from "./RangeFilters";
 import { Prisma } from "@prisma/client";
 
 interface SidebarProps {
@@ -111,13 +111,14 @@ const Sidebar = ({ minMaxValue, searchParams }: SidebarProps) => {
       </div>
       <div className="p-4 space-y-2">
         <TaxonomyFilters searchParams={searchParams} handleChange={handleChange} />
-        <RangeFilters 
+        <RangeFilter
           label="Year"
           minName="minYear"
           maxName="maxYear"
           defaultMin = {_min.year || 1925}
           defaultMax = {_max.year || new Date().getFullYear()}
           handleChange={handleChange}
+          searchParams={searchParams}
         />
       </div>
     </div>
