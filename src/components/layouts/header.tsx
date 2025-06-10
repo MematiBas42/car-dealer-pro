@@ -40,26 +40,23 @@ const Header = async () => {
           </Link>
         ))}
       </nav>
-      <Button asChild size={"icon"} variant={"ghost"}>
-        <Link href={routes.favourites}>
-          <div
-            className="flex group-hover:bg-rose-500 duration-200
-        transition-colors ease-in-out items-center justify-center w-10 h-10
-        bg-muted rounded-full"
-          >
-            <HeartIcon
-              className="w-6 h-6 text-primary group-hover:text-white
-        group-hover:fill-white"
-            />
-          </div>
-          <div
-            className="absolute -top-1  -right-1.5 flex items-center justify-center
-          h-5 w-5 text-white bg-rose-500 rounded-full group-hover:bg-primary"
-          >
-            <span className="text-xs">{favs ? favs.ids.length : 0}</span>
-          </div>
-        </Link>
-      </Button>
+      <Button
+					asChild
+					variant="ghost"
+					size="icon"
+					className="relative inline-block group"
+				>
+					<Link href={routes.favourites}>
+						<div className="flex group-hover:bg-pink-500 diratopm-200 transition-colors ease-in-out items-center justify-center w-10 h-10 bg-muted rounded-full">
+							<HeartIcon className="w-6 h-6 text-primary group-hover:text-white group-hover:fill-white" />
+						</div>
+						<div className="absolute -top-1 5 -right-1.5 flex items-center justify-center w-5 h-5 text-white bg-pink-500 rounded-full group-hover:bg-primary">
+							<span className="text-xs">
+								{favs ? favs.ids.length : 0}
+							</span>
+						</div>
+					</Link>
+				</Button>
       <Sheet>
         <SheetTrigger asChild>
           <Button variant={"link"} className="md:hidden border-none">
