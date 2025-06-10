@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { ChangeEvent } from "react";
 
 type Params = {
     [x: string]: string | string[];
@@ -28,3 +29,9 @@ export enum MultiStepFormEnum {
 export interface Favourites {
     ids: number[]
 }
+
+export interface TaxonomyFiltersProps extends AwaitedPageProps {
+  handleChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+}
+
+export type FilterOptions<Ltype, VType> = Array<{ label: Ltype; value: VType }>;

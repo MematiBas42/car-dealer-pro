@@ -11,30 +11,6 @@ import { getSourceId } from "@/lib/source-id";
 import { ClassifiedStatus, Prisma } from "@prisma/client";
 import React from "react";
 import { z } from "zod";
-const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
-  const validPage = z
-    .string()
-    .transform((value) => Math.max(Number(value), 1))
-    .optional()
-    .parse(searchParams?.page);
-
-  // getthe current page from search params, default to 1
-  const page = validPage ? validPage : 1;
-
-  // cal the offset for pagination
-  const offset = (page - 1) * CARS_PER_PAGE;
-
-  return prisma.classified.findMany({
-    where: {},
-    include: {
-      images: {
-        take: 1, // only take the first image
-      },
-    },
-    skip: offset,
-    take: CARS_PER_PAGE,
-  });
-};
 
 const CarFilterSchema = z.object({
   q: z.string().optional(),
@@ -57,50 +33,6 @@ const CarFilterSchema = z.object({
   seats: z.string().optional(),
   ulezCompliance: z.string().optional(),
 });
-
-// const buildCarsFilterQuery = (
-//   searchParams: AwaitedPageProps["searchParams"] | undefined
-// ): Prisma.ClassifiedWhereInput => {
-//   const data = CarFilterSchema.safeParse(searchParams);
-//   if (!data) {
-//     return {
-//       status: ClassifiedStatus.LIVE,
-//     };
-//   }
-
-//   const keys = Object.keys(data);
-//   const taxonomyFilters = ["make", "model", "modelVariant"];
-//   const mapParamsToFields = keys.reduce(
-//     (acc, key) => {
-//       const value = searchParams?.[key] as string | undefined;
-//       if (!value) return acc;
-
-//       if (taxonomyFilters.includes(key)) {
-//         acc[key] = { id: Number(value) };
-//       }
-
-//       return acc;
-//     },
-//     {} as { [key: string]: any }
-//   );
-
-//   return {
-//     status: ClassifiedStatus.LIVE,
-//     ...(searchParams?.q && {
-//       OR: [
-//         { title: { contains: searchParams.q, mode: "insensitive" as const } },
-//         {
-//           description: {
-//             contains: searchParams.q,
-//             mode: "insensitive" as const,
-//           },
-//         },
-//       ],
-//     }),
-//     ...mapParamsToFields,
-//   };
-// };
-
 export const buildClassifiedFilterQuery = (
 	searchParams: AwaitedPageProps["searchParams"] | undefined,
 ): Prisma.ClassifiedWhereInput => {
@@ -180,13 +112,94 @@ export const buildClassifiedFilterQuery = (
 		...mapParamsToFields,
 	};
 };
+const getInventory = async (searchParams: AwaitedPageProps["searchParams"]) => {
+  const validPage = z
+    .string()
+    .transform((value) => Math.max(Number(value), 1))
+    .optional()
+    .parse(searchParams?.page);
+
+  // getthe current page from search params, default to 1
+  const page = validPage ? validPage : 1;
+
+  // cal the offset for pagination
+  const offset = (page - 1) * CARS_PER_PAGE;
+  
+  return prisma.classified.findMany({
+    where: buildClassifiedFilterQuery(searchParams),
+    include: {
+      images: {
+        take: 1, // only take the first image
+      },
+    },
+    skip: offset,
+    take: CARS_PER_PAGE,
+  });
+};
+
+//   searchParams: AwaitedPageProps["searchParams"] | undefined
+// ): Prisma.ClassifiedWhereInput => {
+//   const data = CarFilterSchema.safeParse(searchParams);
+//   if (!data) {
+//     return {
+//       status: ClassifiedStatus.LIVE,
+//     };
+//   }
+
+//   const keys = Object.keys(data);
+//   const taxonomyFilters = ["make", "model", "modelVariant"];
+//   const mapParamsToFields = keys.reduce(
+//     (acc, key) => {
+//       const value = searchParams?.[key] as string | undefined;
+//       if (!value) return acc;
+
+//       if (taxonomyFilters.includes(key)) {
+//         acc[key] = { id: Number(value) };
+//       }
+
+//       return acc;
+//     },
+//     {} as { [key: string]: any }
+//   );
+
+//   return {
+//     status: ClassifiedStatus.LIVE,
+//     ...(searchParams?.q && {
+//       OR: [
+//         { title: { contains: searchParams.q, mode: "insensitive" as const } },
+//         {
+//           description: {
+//             contains: searchParams.q,
+//             mode: "insensitive" as const,
+//           },
+//         },
+//       ],
+//     }),
+//     ...mapParamsToFields,
+//   };
+// };
 
 const InventoryPage = async (props: PageProps) => {
   const searchParams = await props.searchParams;
   const cars = await getInventory(searchParams);
+ 
   const count = await prisma.classified.count({
-    where: {},
+    where: buildClassifiedFilterQuery(searchParams),
   });
+
+  const minMaxresult = await prisma.classified.aggregate({
+    where: {
+      status: ClassifiedStatus.LIVE,
+    },
+    _min: {
+      year: true,
+    }, 
+    _max: {
+      price: true,
+      year: true,
+      odoReading: true,
+    },
+  })
   const sourceId = await getSourceId();
   const favs = await redis.get<Favourites>(sourceId ?? "");
 
@@ -194,7 +207,7 @@ const InventoryPage = async (props: PageProps) => {
   return (
     <div className="flex">
       {/* <Sidebar/> */}
-      <Sidebar minMaxValue={null} searchParams={searchParams} />
+      <Sidebar minMaxValue={minMaxresult} searchParams={searchParams} />
       <div className="flex-1 p-4 bg-white">
         <div className="flex space-y-2 flex-col xl:flex-row items-center justify-center pb-4 -mt-1">
           <div className="flex justify-between items-center w-full">

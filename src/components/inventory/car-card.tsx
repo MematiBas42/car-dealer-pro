@@ -76,6 +76,7 @@ const CarCard = ({ car, favourites }: CarCardProps) => {
               src={car.images[0]?.src || "/placeholder.png"}
               alt={car.images[0]?.alt || "Car Image"}
               fill={true}
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
               quality={25}
             />
           </Link>

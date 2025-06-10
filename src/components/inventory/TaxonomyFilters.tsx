@@ -1,15 +1,11 @@
 "use client";
-import { AwaitedPageProps } from "@/config/types";
+import { AwaitedPageProps, FilterOptions, TaxonomyFiltersProps } from "@/config/types";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { Select } from "../ui/select";
 import { endpoints } from "@/config/endpoints";
 import { api } from "@/lib/api-client";
 
-interface TaxonomyFiltersProps extends AwaitedPageProps {
-  handleChange: (e: ChangeEvent<HTMLSelectElement>) => void;
-}
 
-type FilterOptions<Ltype, VType> = Array<{ label: Ltype; value: VType }>;
 const TaxonomyFilters = (props: TaxonomyFiltersProps) => {
   const { searchParams, handleChange } = props;
 
@@ -42,6 +38,7 @@ const TaxonomyFilters = (props: TaxonomyFiltersProps) => {
         models: FilterOptions<string, string>;
         modelVariants: FilterOptions<string, string>;
       }>(url.toString());
+
 
       setMakes(data.makes);
       setmodel(data.models);

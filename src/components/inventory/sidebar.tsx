@@ -6,14 +6,26 @@ import { parseAsString, useQueryStates } from "nuqs";
 import React, { useEffect, useState } from "react";
 import SearchInput from "../shared/search-input";
 import TaxonomyFilters from "./TaxonomyFilters";
+import RangeFilters from "./RangeFilters";
+import { Prisma } from "@prisma/client";
 
 interface SidebarProps {
-  minMaxValue: any;
+  minMaxValue: Prisma.GetClassifiedAggregateType<{
+    _min: {
+      year: true;
+    };
+    _max: {
+      year: true;
+      price: true;
+      odoReading: true;
+    };
+  }>;
   searchParams: any;
 }
 const Sidebar = ({ minMaxValue, searchParams }: SidebarProps) => {
   const router = useRouter();
   const [filterCount, setFilterCount] = useState(0);
+  const  {_min, _max} = minMaxValue;
   const [queryStates, setQueryStates] = useQueryStates(
     {
       make: parseAsString.withDefault(""),
@@ -99,6 +111,14 @@ const Sidebar = ({ minMaxValue, searchParams }: SidebarProps) => {
       </div>
       <div className="p-4 space-y-2">
         <TaxonomyFilters searchParams={searchParams} handleChange={handleChange} />
+        <RangeFilters 
+          label="Year"
+          minName="minYear"
+          maxName="maxYear"
+          defaultMin = {_min.year || 1925}
+          defaultMax = {_max.year || new Date().getFullYear()}
+          handleChange={handleChange}
+        />
       </div>
     </div>
   );
