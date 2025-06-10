@@ -74,11 +74,10 @@ const PublicFooter = () => {
 				<NewsLetterForm />
 			</div>
 			<div className="container mx-auto mt-8 text-center text-gray-700">
-				<h4 className="text-lg font-bold text-primary">Company Info</h4>
-				<p>Company No. 123456789 | VAT No. GB123456789</p>
+				<h4 className="text-lg font-bold text-primary">The Real Talk</h4>
+				<p>(yeah we pay taxes, unlike some people)</p>
 				<p>
-					Majestic Motors is not authorised and not regulated by the Financial
-					Conduct Authority
+					Meat Motors ain't authorized by nobody - we just sell cars and mind our business 💯
 				</p>
 			</div>
 		</footer>

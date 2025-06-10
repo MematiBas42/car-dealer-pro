@@ -1,6 +1,7 @@
 import CarCard from "@/components/inventory/car-card";
 import CarsList from "@/components/inventory/cars-list";
 import DialogFilters from "@/components/inventory/DialogFilters";
+import { InventorySkeleton } from "@/components/inventory/inventory-skeleton";
 import Sidebar from "@/components/inventory/sidebar";
 import CustomPagination from "@/components/shared/custom-pagination";
 import { CARS_PER_PAGE } from "@/config/constants";
@@ -11,7 +12,7 @@ import { redis } from "@/lib/redis-store";
 import { getSourceId } from "@/lib/source-id";
 import { buildClassifiedFilterQuery } from "@/lib/utils";
 import { ClassifiedStatus, Prisma } from "@prisma/client";
-import React from "react";
+import React, { Suspense } from "react";
 import { z } from "zod";
 
 
@@ -139,7 +140,14 @@ const InventoryPage = async (props: PageProps) => {
               paginationLinkActive: "bg-sky-500 text-white",
             }}
           />
-          <CarsList cars={cars} favourites={favs ? favs.ids : []} />
+          <Suspense
+            fallback={<InventorySkeleton />}
+          >
+            <CarsList
+              cars={cars}
+              favourites={favs ? favs.ids : []}
+            />
+          </Suspense>
         </div>
 
         <CustomPagination 
