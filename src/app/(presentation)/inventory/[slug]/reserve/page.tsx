@@ -1,3 +1,4 @@
+import { MultiStepFormSchema } from "@/app/schemas/form.schema";
 import SelectDate from "@/components/reserve/SelectDate";
 import SubmitDetails from "@/components/reserve/SubmitDetails";
 import Welcome from "@/components/reserve/Welcome";
@@ -5,12 +6,6 @@ import { MultiStepFormEnum, PageProps } from "@/config/types";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import React from "react";
-import { z } from "zod";
-
-const MultiStepFormSchema = z.object({
-  step: z.nativeEnum(MultiStepFormEnum),
-  slug: z.string(),
-});
 
 const MAP_STEP_TO_COMPONENT = {
   [MultiStepFormEnum.WELCOME]: Welcome ,

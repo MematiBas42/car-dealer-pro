@@ -6,14 +6,14 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import React, { useTransition } from "react";
-import {  SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import z from "zod";
 import { SubmitDetailsSchema } from "@/app/schemas/customer.schema";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 import {
-    Form,
+  Form,
   FormField,
   FormItem,
   FormLabel,
@@ -21,7 +21,10 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
-
+import { formatDate } from "@/lib/utils";
+import { createCustomerAction } from "@/app/_actions/customer";
+import { toast } from "sonner";
+import { routes } from "@/config/routes";
 type SubmitdetaiSchemaType = z.infer<typeof SubmitDetailsSchema>;
 
 const SubmitDetails = (props: MultiStepsFormComponentProps) => {
@@ -53,7 +56,44 @@ const SubmitDetails = (props: MultiStepsFormComponentProps) => {
 
   const onSubmitDetails: SubmitHandler<SubmitdetaiSchemaType> = async (
     data
-  ) => {};
+  ) => {
+    startTransition(async () => {
+      const valid = await form.trigger();
+      if (!valid) return;
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const handoverDate = decodeURIComponent(
+        searchParams?.handoverDate as string
+      );
+      const handoverTime = decodeURIComponent(
+        searchParams?.handoverTime as string
+      );
+      console.log({  handoverDate, handoverTime });
+      const date = formatDate(handoverDate, handoverTime);
+      
+      const {success, message} = await createCustomerAction({
+        slug: params?.slug as string,
+        date,
+        ...data, 
+      })
+
+      if (!success) {
+        toast.error("Error", {
+          description: message,
+          duration: 1000,
+        })
+        return;
+      }
+      toast.success("Success", {
+        description: "Customer has completed the booking",
+        duration: 1000,
+      });
+
+      setTimeout(() => {
+        router.push(routes.reserveSuccess(params?.slug as string));
+      },1000)
+    });
+  };
   return (
     <Form {...form}>
       <form
