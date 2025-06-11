@@ -13,6 +13,8 @@ import { SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper/types";
 import SwiperButton from "../shared/swiper-button";
 import { CarouselSkeleton } from "./carousel-skeleton";
+import ImgixImage from "../ui/imgix-image";
+import { imgixLoader } from "@/lib/imgix-loader";
 
 const Swiper = dynamic(() => import("swiper/react").then((mod) => mod.Swiper), {
   ssr: false,
@@ -80,13 +82,15 @@ const CarCarousel = ({ images }: ClassifiedCarouselProps) => {
         >
           {images.map((image, index) => (
             <SwiperSlide key={image.id} virtualIndex={index}>
-              <Image
-                blurDataURL={image.blurhash}
-                src={image.src}
-                alt={image.alt || "Car image"}
-                width={1200}
-                height={800}
-                className="aspect-3/2 object-cover rounded-md cursor-pointer"
+              <ImgixImage
+               blurDataURL={image.blurhash}
+								placeholder="blur"
+								src={image.src}
+								alt={image.alt}
+								width={600}
+								height={400}
+								quality={100}
+								className="aspect-3/2 object-cover rounded-md cursor-pointer"
                 onClick={handleImageClick}
               />
             </SwiperSlide>
@@ -110,7 +114,7 @@ const CarCarousel = ({ images }: ClassifiedCarouselProps) => {
             className="relative mt-2 h-fit w-full cursor-grab"
             key={image.id}
           >
-            <Image
+            <ImgixImage
               className="object-cover aspect-3/2 rounded-md"
               width={150}
               height={100}

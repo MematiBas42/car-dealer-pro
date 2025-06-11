@@ -16,38 +16,33 @@ const TaxonomyFilters = (props: TaxonomyFiltersProps) => {
   >([]);
 
  useEffect(() => {
-  (async function fetchMakesOptions() {
-    const params = new URLSearchParams();
+		(async function fetchMakesOptions() {
+			const params = new URLSearchParams();
+			for (const [k, v] of Object.entries(
+				searchParams as Record<string, string>,
+			)) {
+				if (v) params.set(k, v as string);
+			}
+
+			const url = new URL(endpoints.taxonomy, window.location.href);
+
+			url.search = params.toString();
+
+			const data = await api.get<{
+				makes: FilterOptions<string, string>;
+				models: FilterOptions<string, string>;
+				modelVariants: FilterOptions<string, string>;
+			}>(url.toString());
+
+			setMakes(data.makes);
+			setmodel(data.models);
+			setmodelVariant(data.modelVariants);
+		})();
+
     
-    // Build params first
-    for (const [k, v] of Object.entries(
-      searchParams as Record<string, string>
-    )) {
-      if (v) {
-        params.append(k, v as string);
-      }
-    }
-    
-    // Then make the API call once
-    const url = new URL(endpoints.taxonomy, window.location.href);
-    url.search = params.toString();
+	}, [searchParams]);
 
-    try {
-      const data = await api.get<{
-        makes: FilterOptions<string, string>;
-        models: FilterOptions<string, string>;
-        modelVariants: FilterOptions<string, string>;
-      }>(url.toString());
-
-
-      setMakes(data.makes);
-      setmodel(data.models);
-      setmodelVariant(data.modelVariants);
-    } catch (error) {
-      console.error('Failed to fetch taxonomy data:', error);
-    }
-  })();
-}, [searchParams]);
+  
   return (
     <>
       <Select
