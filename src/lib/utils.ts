@@ -3,7 +3,7 @@ import { AwaitedPageProps } from "@/config/types";
 import { BodyType, ClassifiedStatus, Colour, CurrencyCode, FuelType, OdoUnit, Prisma, Transmission } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-
+import {format} from "date-fns"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
@@ -192,3 +192,42 @@ export function formatBodyType(bodyType: BodyType) {
 		...mapParamsToFields,
 	};
 };
+
+export const generataTimeOptions = () => {
+	const times = [];
+	const startHour = 8
+	const endHours = 20;
+	for (let hour = startHour; hour <= endHours; hour++) {
+		const date = new Date();
+		date.setDate(date.getDate() +1)
+		date.setHours(hour);
+		date.setMinutes(0);
+		const formattedTime = date.toLocaleTimeString(
+			"en-GB",
+			{
+				hour: "2-digit",
+				minute: "2-digit",
+				hour12: false,
+			}
+		)
+		times.push({
+			value: formattedTime,
+			label: formattedTime,
+		});
+	}
+	return times;
+}
+
+export const generateDateOptions = () => {
+	const today = new Date();
+	const dates  = []
+	for (let i = 0; i < 30; i++) {
+		const date = new Date(today);
+		date.setDate(today.getDate() + i);
+		dates.push({
+			label: format(date, "dd MMMM yyyy"),
+			value: format(date, "yyyy-MM-dd"),
+		})
+	}
+	return dates;
+}

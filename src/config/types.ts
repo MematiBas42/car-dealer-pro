@@ -35,3 +35,11 @@ export interface TaxonomyFiltersProps extends AwaitedPageProps {
 }
 
 export type FilterOptions<Ltype, VType> = Array<{ label: Ltype; value: VType }>;
+
+export interface MultiStepsFormComponentProps extends AwaitedPageProps {
+    car: Prisma.ClassifiedGetPayload<{
+        include: {
+            make: true
+        }
+    }>
+}
