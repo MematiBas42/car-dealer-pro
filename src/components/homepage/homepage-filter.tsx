@@ -3,7 +3,7 @@
 import { SidebarProps } from "../inventory/sidebar";
 import { parseAsString, useQueryStates } from "nuqs";
 import TaxonomyFilters from "../inventory/TaxonomyFilters";
-
+import { RangeFilter } from "../inventory/RangeFilters";
 
 interface HomepageTaxonomyFiltersProps extends SidebarProps {}
 const HomepageTaxonomyFilters = ({
@@ -23,30 +23,55 @@ const HomepageTaxonomyFilters = ({
     },
     { shallow: false }
   );
-  
+
   const handleChange = async (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-	) => {
-		const { name, value } = e.target;
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
 
-		switch (name) {
-			case "make":
-				await setState({ make: value, model: null, modelVariant: null });
-				break;
-			case "model":
-				await setState({ model: value, modelVariant: null });
-				break;
-			default:
-				await setState({ [name]: value });
-		}
-	};
+    switch (name) {
+      case "make":
+        await setState({ make: value, model: null, modelVariant: null });
+        break;
+      case "model":
+        await setState({ model: value, modelVariant: null });
+        break;
+      default:
+        await setState({ [name]: value });
+    }
+  };
 
-  return <div>
-    <TaxonomyFilters
+  return (
+    <div>
+      <TaxonomyFilters
         searchParams={searchParams}
-        
-    handleChange ={handleChange}/>
-  </div>;
+        handleChange={handleChange}
+      />
+      <RangeFilter
+        label="Year"
+        minName="minYear"
+        maxName="maxYear"
+        defaultMin={_min.year || 1925}
+        defaultMax={_max.year || new Date().getFullYear()}
+        handleChange={handleChange}
+        searchParams={searchParams}
+      />
+      <RangeFilter
+        label="Price"
+        minName="minPrice"
+        maxName="maxPrice"
+        defaultMin={_min.price || 0}
+        defaultMax={_max.price || 21474836}
+        handleChange={handleChange}
+        searchParams={searchParams}
+        increment={1000000}
+        thousandSeparator
+        currency={{
+          currencyCode: "EUR",
+        }}
+      />
+    </div>
+  );
 };
 
 export default HomepageTaxonomyFilters;
