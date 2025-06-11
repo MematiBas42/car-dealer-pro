@@ -63,12 +63,14 @@ const PublicFooter = () => {
 					))}
 					<li>
 						<Link
-							href={'/terms-and-conditions'}
+							href={routes.signIn}
 							className="text-foreground hover:text-primary"
 						>
 							Admin
 						</Link>
 					</li>
+					
+
 				</ul>
 
 				<NewsLetterForm />

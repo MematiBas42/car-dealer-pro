@@ -6,9 +6,9 @@ import { seedImage } from "./imageSeed";
 const prisma = new PrismaClient();
 async function main() {
     // await prisma.$executeRaw`TRUNCATE TABLE "makes" RESTART IDENTITY CASCADE;`;
-    // await seedTax(prisma)
+    await seedTax(prisma)
 
-    //await seedClass(prisma);
+    await seedClass(prisma);
     await seedImage(prisma);
 
 }

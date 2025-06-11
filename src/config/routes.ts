@@ -7,5 +7,7 @@ export const routes = {
     reserveSuccess: (slug: string) => `/inventory/${slug}/success`,
     favourites: "/favourites",
     inventory: "/inventory",
+    signIn: "/auth/sign-in",
+    signUp: "/auth/sign-up",
     notAvailable: (slug: string) => `/inventory/${slug}/not-available`,
 }
