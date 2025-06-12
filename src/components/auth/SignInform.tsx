@@ -7,6 +7,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useFormStatus } from "react-dom";
 import { CircleCheckIcon, Loader2 } from "lucide-react";
+import { SignInAction } from "@/app/_actions/sign-in";
 
 
 const SignInButton = () => {
@@ -27,7 +28,7 @@ const SignInButton = () => {
 };
 
 const SignInform = () => {
-  const [state, formActions] = useActionState(null, {
+  const [state, formActions] = useActionState(SignInAction, {
     success: false,
     message: "",
   });

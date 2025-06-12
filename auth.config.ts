@@ -9,16 +9,8 @@ import { routes } from "@/config/routes";
 import { Rocket } from "lucide-react";
 import { SESSION_MAX_AGE } from "@/config/constants"; // 30 days in seconds
 import { AdapterUser } from "@auth/core/adapters";
-const SignInSchema = z.object({
-  email: z
-    .string({
-      required_error: "Email is required",
-    })
-    .email("Invalid email address")
-    .trim()
-    .toLowerCase(),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
-});
+import { SignInSchema } from "@/app/schemas/auth.schema";
+
 export const config = {
   adapter: PrismaAdapter(prisma),
   useSecureCookies: false,

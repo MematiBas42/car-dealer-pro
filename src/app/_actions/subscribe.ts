@@ -4,8 +4,9 @@ import { CustomerStatus } from '@prisma/client';
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from '@prisma/client/runtime/library';
 import { z } from 'zod';
 import { SubscribeSchema } from '../schemas/sub.schema';
+import { PrevState } from '@/config/types';
 
-export const subscribeAction = async(_: any, formData: FormData) => {
+export const subscribeAction = async(_: PrevState, formData: FormData) => {
     try {
         const {data, success, error} = SubscribeSchema.safeParse({
         email: formData.get('email') as string,

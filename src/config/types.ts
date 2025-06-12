@@ -43,3 +43,8 @@ export interface MultiStepsFormComponentProps extends AwaitedPageProps {
         }
     }>
 }
+
+export type PrevState  = {
+    success: boolean;
+    message: string;
+}

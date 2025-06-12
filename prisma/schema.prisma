@@ -1,12 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
- reviewFeatures = ["prismaSchemaFolder", "strictUndefinedChecks", "driverAdapters"]
+  provider       = "prisma-client-js"
+  reviewFeatures = ["prismaSchemaFolder", "strictUndefinedChecks", "driverAdapters"]
 }
 
 datasource db {
@@ -15,24 +9,23 @@ datasource db {
 }
 
 model Session {
-    id       String   @id @default(cuid())
-    sessionId String @unique @map("session_id")
-    userId   String   @map("user_id")
-    expires DateTime 
-    requireF2A Boolean @default(true)
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  id         String   @id @default(cuid())
+  sessionId  String   @unique @map("session_id")
+  userId     String   @map("user_id")
+  expires    DateTime
+  requireF2A Boolean  @default(true)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@map("sessions")
+  @@map("sessions")
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  hashedPassword String @map("hashed_password")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  sessions  Session[]
+  id             String    @id @default(cuid())
+  email          String    @unique
+  hashedPassword String    @map("hashed_password")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  sessions       Session[]
 
   @@map("users")
 }
@@ -50,11 +43,8 @@ model Classified {
   seats          Int              @default(5)
   price          Int              @default(0) @map("price")
   makeId         Int              @map("make_id")
-  make           Make             @relation(fields: [makeId], references: [id])
   modelId        Int              @map("model_id")
-  model          Model            @relation(fields: [modelId], references: [id])
   modelVariantId Int?             @map("model_variant_id")
-  modelVariant   ModelVariant?    @relation(fields: [modelVariantId], references: [id])
   ulezCompliance ULEZCompliance   @default(EXEMPT)
   transmission   Transmission     @default(MANUAL)
   colour         Colour           @default(BLACK)
@@ -63,15 +53,113 @@ model Classified {
   odoUnit        OdoUnit          @default(MILES)
   currency       CurrencyCode     @default(GBP)
   status         ClassifiedStatus @default(DRAFT)
-  images         Image[]
-  customers      Customer[]
   createdAt      DateTime         @default(now()) @map("created_at")
   updatedAt      DateTime         @updatedAt @map("updated_at")
+  make           Make             @relation(fields: [makeId], references: [id])
+  model          Model            @relation(fields: [modelId], references: [id])
+  modelVariant   ModelVariant?    @relation(fields: [modelVariantId], references: [id])
+  customers      Customer[]
+  images         Image[]
 
-  @@index([makeId, modelId], name: "index_make_model")
-  @@index([status], name: "index_status")
-  @@index([price], name: "index_price")
+  @@index([makeId, modelId], map: "index_make_model")
+  @@index([status], map: "index_status")
+  @@index([price], map: "index_price")
   @@map("classifieds")
+}
+
+model Make {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  image       String
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  classifieds Classified[]
+  models      Model[]
+
+  @@map("makes")
+}
+
+model Model {
+  id            Int            @id @default(autoincrement())
+  name          String
+  makeId        Int            @map("make_id")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+  classifieds   Classified[]
+  modelVariants ModelVariant[]
+  make          Make           @relation(fields: [makeId], references: [id], onDelete: Cascade)
+
+  @@unique([makeId, name])
+  @@map("models")
+}
+
+model ModelVariant {
+  id          Int          @id @default(autoincrement())
+  name        String
+  modelId     Int          @map("model_id")
+  yearStart   Int
+  yearEnd     Int
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  classifieds Classified[]
+  model       Model        @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+  @@unique([modelId, name])
+  @@map("model_variants")
+}
+
+model Image {
+  id           Int        @id @default(autoincrement())
+  alt          String
+  src          String
+  classifiedId Int        @map("classified_id")
+  blurhash     String
+  isMain       Boolean    @default(false) @map("is_main")
+  classified   Classified @relation(fields: [classifiedId], references: [id], onDelete: Cascade)
+
+  @@map("images")
+}
+
+model Customer {
+  id            Int                 @id @default(autoincrement())
+  firstName     String              @map("first_name")
+  lastName      String              @map("last_name")
+  email         String
+  mobile        String?
+  bookingDate   DateTime?           @map("booking_date")
+  termsAccepted Boolean             @default(false) @map("terms_accepted")
+  status        CustomerStatus      @default(INTERESTED)
+  classifiedId  Int?                @map("classified_id")
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+  lifecycle     CustomerLifecycle[]
+  classified    Classified?         @relation(fields: [classifiedId], references: [id], onDelete: Cascade)
+
+  @@map("customers")
+}
+
+model CustomerLifecycle {
+  id         Int            @id @default(autoincrement())
+  customerId Int            @map("customer_id")
+  oldStatus  CustomerStatus @map("old_status")
+  newStatus  CustomerStatus @map("new_status")
+  createdAt  DateTime       @default(now()) @map("created_at")
+  updatedAt  DateTime       @updatedAt @map("updated_at")
+  customer   Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@map("customer_lifecycle")
+}
+
+model PageView {
+  id        Int      @id @default(autoincrement())
+  path      String
+  viewedAt  DateTime @default(now()) @map("viewed_at")
+  ipAddress String?
+  userAgent String?
+  referrer  String?
+
+  @@index([path, viewedAt])
+  @@map("page_views")
 }
 
 enum ClassifiedStatus {
@@ -133,105 +221,10 @@ enum Transmission {
   AUTOMATIC
 }
 
-model Make {
-  id          Int          @id @default(autoincrement())
-  name        String       @unique
-  image       String
-  models      Model[]
-  classifieds Classified[]
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
-
-  @@map("makes")
-}
-
-model Model {
-  id            Int            @id @default(autoincrement())
-  name          String
-  makeId        Int            @map("make_id")
-  make          Make           @relation(fields: [makeId], references: [id], onDelete: Cascade)
-  modelVariants ModelVariant[]
-  classifieds   Classified[]
-  createdAt     DateTime       @default(now()) @map("created_at")
-  updatedAt     DateTime       @updatedAt @map("updated_at")
-
-  @@unique([makeId, name])
-  @@map("models")
-}
-
-model ModelVariant {
-  id          Int          @id @default(autoincrement())
-  name        String
-  modelId     Int          @map("model_id")
-  yearStart   Int
-  yearEnd     Int
-  model       Model        @relation(fields: [modelId], references: [id], onDelete: Cascade)
-  classifieds Classified[]
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
-
-  @@unique([modelId, name])
-  @@map("model_variants")
-}
-
-model Image {
-  id           Int        @id @default(autoincrement())
-  alt          String
-  src          String
-  classifiedId Int        @map("classified_id")
-  classified   Classified @relation(fields: [classifiedId], references: [id], onDelete: Cascade)
-  blurhash     String
-  isMain       Boolean    @default(false) @map("is_main")
-
-  @@map("images")
-}
-
-model Customer {
-  id            Int                 @id @default(autoincrement())
-  firstName     String              @map("first_name")
-  lastName      String              @map("last_name")
-  email         String
-  mobile        String?
-  bookingDate   DateTime?           @map("booking_date")
-  termsAccepted Boolean             @default(false) @map("terms_accepted")
-  status        CustomerStatus      @default(INTERESTED)
-  classifiedId  Int?                @map("classified_id")
-  classified    Classified?         @relation(fields: [classifiedId], references: [id], onDelete: Cascade)
-  createdAt     DateTime            @default(now()) @map("created_at")
-  updatedAt     DateTime            @updatedAt @map("updated_at")
-  lifecycle     CustomerLifecycle[]
-
-  @@map("customers")
-}
-
 enum CustomerStatus {
   SUBSCRIBER
   INTERESTED
   CONTACTED
   PURCHASED
   COLD
-}
-
-model CustomerLifecycle {
-  id         Int            @id @default(autoincrement())
-  customerId Int            @map("customer_id")
-  customer   Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  oldStatus  CustomerStatus @map("old_status")
-  newStatus  CustomerStatus @map("new_status")
-  createdAt  DateTime       @default(now()) @map("created_at")
-  updatedAt  DateTime       @updatedAt @map("updated_at")
-
-  @@map("customer_lifecycle")
-}
-
-model PageView {
-  id        Int      @id @default(autoincrement())
-  path      String
-  viewedAt  DateTime @default(now()) @map("viewed_at")
-  ipAddress String?
-  userAgent String?
-  referrer  String?
-
-  @@index([path, viewedAt])
-  @@map("page_views")
 }
