@@ -6,3 +6,4 @@ export const imageSources = {
 }
 
 export const CARS_PER_PAGE = 6
+export const SESSION_MAX_AGE = 7 * 24 * 60 * 60 * 1000; 
