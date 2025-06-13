@@ -8,6 +8,8 @@ import { HeartIcon, MenuIcon } from "lucide-react";
 import { redis } from "@/lib/redis-store";
 import { getSourceId } from "@/lib/source-id";
 import { Favourites } from "@/config/types";
+import { auth } from "@/auth";
+import SignoutForm from "../auth/SignoutForm";
 
 const navLinks = [
   { id: 1, href: routes.home, label: "Home" },
@@ -15,6 +17,7 @@ const navLinks = [
 ];
 const Header = async () => {
   const sourceId = await getSourceId();
+  const session = await auth();
   const favs = await redis.get<Favourites>(sourceId ?? "");
   return (
     <header className="flex items-center justify-between h-16 px-4 bg-transparent gap-x-6">
@@ -40,7 +43,17 @@ const Header = async () => {
           </Link>
         ))}
       </nav>
-      <Button
+      {session ? (
+        <div className="items-center md:flex gap-x-6 hidden">
+          <Link href={routes.admin.dashboard}
+           className="text-foreground"
+          >
+            Admin office
+          </Link>
+          <SignoutForm />
+        </div>
+      ): (
+  <Button
 					asChild
 					variant="ghost"
 					size="icon"
@@ -57,6 +70,8 @@ const Header = async () => {
 						</div>
 					</Link>
 				</Button>
+      )}
+    
       <Sheet>
         <SheetTrigger asChild>
           <Button variant={"link"} className="md:hidden border-none">
