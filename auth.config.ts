@@ -38,6 +38,7 @@ export const config = {
               email: validatedFields.data.email,
             },
             select: {
+              id: true,
               hashedPassword: true,
             },
           });
@@ -46,7 +47,7 @@ export const config = {
             return null;
           }
 
-          const match = bcryptPasswordCompare(
+          const match = await bcryptPasswordCompare(
             validatedFields.data.password,
             user.hashedPassword
           );
@@ -66,44 +67,43 @@ export const config = {
         }
       },
     }),
+    ResendProvider({}),
   ],
   pages: {
     signIn: routes.signIn,
     signOut: "/auth/sign-out",
     error: "/auth/error",
   },
-  callbacks: {
-    async jwt({ token, user }) {
-      const session = await prisma.session.create({
-        data: {
-          expires: new Date(Date.now() + SESSION_MAX_AGE),
-          // sessionToken: crypto.randomUUID(),
-          sessionId: crypto.randomUUID(),
-          userId: user.id as string,
-          requireF2A: user.requires2FA,
-        },
-      });
+ callbacks: {
+		async jwt({ user, token }) {
+			const session = await prisma.session.create({
+				data: {
+					expires: new Date(Date.now() + SESSION_MAX_AGE),
+					sessionId: crypto.randomUUID(),
+					userId: user.id as string,
+					requireF2A: user.requires2FA as boolean,
+				},
+			});
 
-      if (!session) {
-        return null;
-      }
-      if (user) {
-        token.requires2FA = user.requires2FA;
-      }
-      token.id = session.sessionId;
-      token.exp = session.expires.getTime() / 1000; // Convert to seconds
+			if (!session) return null;
 
-      return token;
-    },
-    async session({ session, user }) {
-      session.user = {
-        id: session.userId,
-        email: user.email,
-      } as AdapterUser;
-      return session;
-    },
-  },
+			if (user) token.requires2FA = user.requires2FA;
+
+			token.id = session.sessionId;
+			token.exp = session.expires.getTime();
+
+			return token;
+		},
+
+		async session({ session, user }) {
+			session.user = {
+				id: session.userId,
+				email: user.email,
+			} as AdapterUser;
+			return session;
+		},
+	},
   jwt: {
     encode: async ({ token }) => token?.id as string,
   },
-} satisfies NextAuthConfig;
+} as NextAuthConfig;
