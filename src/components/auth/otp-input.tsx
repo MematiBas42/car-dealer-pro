@@ -79,7 +79,7 @@ const OTPInput = forwardRef<HTMLInputElement, PinCodeProps>(
       setPinvalue();
       if (isComplete) {
         const form = event.currentTarget.closest("form");
-        //form?.requestSubmit();
+        form?.requestSubmit();
       }
     }
     function handleKeyDown(

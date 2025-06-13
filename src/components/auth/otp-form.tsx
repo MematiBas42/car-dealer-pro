@@ -2,14 +2,15 @@
 import { OTPSchema, OTPSchemaType } from "@/app/schemas/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import React, { useState, useTransition } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import OTPInput from "./otp-input";
 import { Button } from "../ui/button";
 import { Loader2, RotateCw } from "lucide-react";
-import { resendChallengeAction } from "@/app/_actions/challenge";
+import { completeChallengeAction, resendChallengeAction } from "@/app/_actions/challenge";
+import { toast } from "sonner";
 
 const OtpForm = () => {
   const [isCodePending, startCodeTransition] = useTransition();
@@ -21,16 +22,46 @@ const OtpForm = () => {
   const form = useForm<OTPSchemaType>({
     resolver: zodResolver(OTPSchema),
   });
-  const onSubmit: SubmitHandler<OTPSchemaType> = async (data) => {};
+  const onSubmit: SubmitHandler<OTPSchemaType> = async (data) => {
+    startSubmitTransition(async () => {
+      // complete OTP action
+      const result =  await completeChallengeAction(data.code);
+      console.log("OTP result", result);
+      if (!result?.success) {
+        toast.error("Error completing OTP", {
+          description: result.message,
+        });
+        return;
+      } else {
+        console.log("OTP completed successfully");
+      }
+    })
+  };
   const sendCode = async () => {
     startCodeTransition(async () => {
       // Simulate sending code
       
-      await resendChallengeAction ();
+      const {
+        success, message
+      } = await resendChallengeAction ();
       // Here you would typically call an API to send the OTP code
-      console.log("Code sent to email");
+      setSendButtontext("Resend code");
+      if (!success) {
+        toast.error("Eror sending code",{
+          description: message,
+        });
+      }
+      toast.success("Code sent successfully", {
+        description: "Please check your email for the code.",
+      })
     });
   }
+
+  useEffect(() => {
+    if (isCodePending) {
+      setSendButtontext("Sending...");
+    }
+  },[])
   return (
     <div
       className="min-h-[calc(100vh-4rem)] flex w-full flex-1 justify-center

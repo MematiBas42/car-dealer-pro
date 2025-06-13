@@ -23,6 +23,9 @@
       "@/emails/*": [
         "./emails/*"
       ],
+      "@/auth": [
+        "./auth"
+      ],
     }
   },
   "include": [

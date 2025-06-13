@@ -10,6 +10,7 @@ import { Rocket } from "lucide-react";
 import { SESSION_MAX_AGE } from "@/config/constants"; // 30 days in seconds
 import { AdapterUser } from "@auth/core/adapters";
 import { SignInSchema } from "@/app/schemas/auth.schema";
+import { issueChallenge } from "@/lib/otp";
 
 export const config = {
   adapter: PrismaAdapter(prisma),
@@ -40,6 +41,7 @@ export const config = {
             select: {
               id: true,
               hashedPassword: true,
+              email: true,
             },
           });
 
@@ -57,10 +59,14 @@ export const config = {
           }
 
           // issue a challenge to the user
-          return {
-            ...user,
-            requires2FA: true,
-          };
+          await issueChallenge(user.id, user.email);
+
+          const dbUser = await prisma.user.findUnique({
+						where: { id: user.id },
+						omit: { hashedPassword: true },
+					});
+
+					return { ...dbUser, requires2FA: true };
         } catch (error) {
           console.log(error);
           return null;
@@ -79,7 +85,7 @@ export const config = {
 			const session = await prisma.session.create({
 				data: {
 					expires: new Date(Date.now() + SESSION_MAX_AGE),
-					sessionId: crypto.randomUUID(),
+					sessionToken: crypto.randomUUID(),
 					userId: user.id as string,
 					requireF2A: user.requires2FA as boolean,
 				},
@@ -89,7 +95,7 @@ export const config = {
 
 			if (user) token.requires2FA = user.requires2FA;
 
-			token.id = session.sessionId;
+			token.id = session.sessionToken;
 			token.exp = session.expires.getTime();
 
 			return token;
