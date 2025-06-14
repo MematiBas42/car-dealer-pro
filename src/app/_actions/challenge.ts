@@ -3,7 +3,13 @@
 import { issueChallenge } from "@/lib/otp";
 import { auth } from "../../../auth";
 import { completeChallenge } from "@/lib/otp";
+import { genericRateLimit } from "@/lib/rate-limiter";
 export const resendChallengeAction = async () => {
+
+    const limiterError  = await genericRateLimit("otp");
+    if (limiterError) {
+        return limiterError;
+    }
     const session = await auth();
 
     if (!session?.user) {

@@ -109,6 +109,19 @@ const OtpForm = () => {
                     {sendButtontext}
                 </button>
             </div>
+            <div className="mt-6 flex w-full flex-col gap-4 md:mt-16">
+							<Button
+								className="flex w-full gap-x-2"
+								disabled={isSubmitPending}
+							>
+								<span className="text-sm uppercase tracking-wider text-inherit">
+									{isSubmitPending ? "Verifying..." : "Verify"}
+								</span>
+								{isSubmitPending ? (
+									<Loader2 className="w-4 h-4 shrink-0 animate-spin" />
+								) : null}
+							</Button>
+						</div>
           </form>
         </Form>
       </div>
