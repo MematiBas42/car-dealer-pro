@@ -1,4 +1,5 @@
 import AdminHeader from '@/components/layouts/admin-header'
+import AdminSidebar from '@/components/layouts/admin-sidebar'
 import React, { PropsWithChildren } from 'react'
 
 const AdminLayout = (
@@ -8,7 +9,7 @@ const AdminLayout = (
 ) => {
   return (
     <div className='flex bg-gray-900 min-h-screen w-full'>
-        {/* admib side bar */}
+        <AdminSidebar />
         <div className='flex flex-col flex-1 overflow-hidden'>
             <AdminHeader />
         </div>
