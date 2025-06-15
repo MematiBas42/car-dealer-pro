@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import NextTopLoader from "nextjs-toploader";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { cn } from "@/lib/utils";
+
 const mulish = Mulish({
 	weight: "variable",
 	subsets: ["latin"],
@@ -30,7 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    
+		<html lang="en">
       <body
 				className={cn(
 					"antialiased overscroll-none bg-background font-heading",
@@ -43,5 +45,6 @@ export default function RootLayout({
         <Toaster />
       </body>
     </html>
+	
   );
 }

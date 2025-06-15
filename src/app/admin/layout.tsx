@@ -1,9 +1,11 @@
 import AdminHeader from "@/components/layouts/admin-header";
 import AdminSidebar from "@/components/layouts/admin-sidebar";
 import React, { PropsWithChildren } from "react";
+import { AI } from "../_actions/ai";
 
 const AdminLayout = ({ children }: PropsWithChildren) => {
   return (
+    <AI>
     <div className="flex bg-gray-900 min-h-screen w-full">
       <AdminSidebar />
       <div className="flex flex-col flex-1 overflow-hidden">
@@ -16,6 +18,7 @@ const AdminLayout = ({ children }: PropsWithChildren) => {
         </main>
       </div>
     </div>
+    </AI>
   );
 };
 
