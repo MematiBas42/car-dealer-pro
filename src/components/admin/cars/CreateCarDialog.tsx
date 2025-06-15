@@ -21,6 +21,11 @@ import {
 import { StreamableSkeletonProps } from "./StreamableSkeletion";
 import { CarAISchema } from "@/app/schemas/car-ai";
 import { z } from "zod";
+import { createCarAction } from "@/app/_actions/car";
+import { toast } from "sonner";
+import { Form } from "@/components/ui/form";
+import { Loader2 } from "lucide-react";
+import SingleImageUploader from "./SingleImageUploader";
 
 const CreateCarDialog = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,17 +63,26 @@ const CreateCarDialog = () => {
       if (!responseMessage) return;
       setMessages((prev) => [...prev, responseMessage]);
       for await (const value of readStreamableValue(responseMessage.car)) {
-        if (value){ createForm.reset(value)}
+        if (value) {
+          createForm.reset(value);
+        }
       }
     });
   };
 
-  const onCreateSubmit: SubmitHandler<StreamableSkeletonProps> =  (data) => {
+  const onCreateSubmit: SubmitHandler<StreamableSkeletonProps> = (data) => {
     startCreateTransition(async () => {
-        setMessages([]);
-        
-    })
-  }
+      setMessages([]);
+      const { success, message } = await createCarAction(data);
+
+      if (!success) {
+        toast.error("Error", {
+          description: message || "Something went wrong",
+          duration: 3000,
+        });
+      }
+    });
+  };
   return (
     <Dialog open={true} onOpenChange={() => console.log("Dialog closed")}>
       <DialogTrigger asChild>
@@ -80,6 +94,36 @@ const CreateCarDialog = () => {
         <DialogHeader>
           <DialogTitle>Create new car</DialogTitle>
         </DialogHeader>
+        <Form {...imageForm}>
+          <form
+            onSubmit={imageForm.handleSubmit(onImageSubmit)}
+            className="space-y-4"
+          >
+            <SingleImageUploader 
+                onUploadComplete={handleImageUpload}
+            />
+            <div className="flex justify-between gap-2">
+              <Button
+                variant={"outline"}
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                disabled={isUploading}
+                type="submit"
+                className="flex items-center gap-x-2"
+              >
+                {isUploading ? (
+                  <Loader2 className="animate-spin h-4 w-4" />
+                ) : (
+                  "Upload Image"
+                )}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
