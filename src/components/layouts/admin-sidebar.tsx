@@ -102,7 +102,7 @@ const AdminSidebar = () => {
                   <Image
                     src="/window.svg"
                     fill={true}
-                    className="object-contain object-left bg-sky-600"
+                    className="object-contain object-left"
                     alt="Mobile Logo"
                   />
                 </motion.div>
