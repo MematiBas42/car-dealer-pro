@@ -2,7 +2,7 @@
 import { createAI, createStreamableUI, createStreamableValue, StreamableValue } from 'ai/rsc'
 import {UserContent} from "ai"
 import {createOpenAI} from "@ai-sdk/openai"
-import StreamableSkeletion from '@/components/admin/cars/StreamableSkeletion';
+import StreamableSkeletion, { StreamableSkeletonProps } from '@/components/admin/cars/StreamableSkeletion';
 const openai = createOpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
 	compatibility: "strict",
@@ -32,10 +32,10 @@ export type ClientMessage = {
     
     role: "user" | "assistant",
     display: React.ReactNode;
-    car: StreamableValue<any>
+    car: StreamableValue<StreamableSkeletonProps>
 }
 export const AI = createAI({
-    initialUIState: [],
+    initialUIState: [] as ClientMessage[],
     initialAIState: [] as ServerMessage[],
     actions: {
         generateCar
