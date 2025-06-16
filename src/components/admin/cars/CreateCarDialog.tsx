@@ -86,11 +86,11 @@ const CreateCarDialog = () => {
   return (
     <Dialog open={true} onOpenChange={() => console.log("Dialog closed")}>
       <DialogTrigger asChild>
-        <Button className="mt-4" size={"sm"}>
+        <Button className="ml-4" size={"sm"}>
           Add new
         </Button>
       </DialogTrigger>
-      <DialogContent className={cn(`max-w-6xl bg-white`)}>
+      <DialogContent className={cn(` bg-white max-w-7xl`)}>
         <DialogHeader>
           <DialogTitle>Create new car</DialogTitle>
         </DialogHeader>
