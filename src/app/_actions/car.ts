@@ -7,9 +7,10 @@ import { generateThumbHashFromSrUrl } from "@/lib/thumbhash-server";
 import { CurrencyCode } from "@prisma/client";
 import { randomInt } from "crypto";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { forbidden, redirect } from "next/navigation";
 import slugify from "slugify";
 import { createPngDataUri } from "unlazy/thumbhash";
+import { UpdateCarType } from "../schemas/car.schema";
 export const createCarAction = async (data: StreamableSkeletonProps) => {
   const session = await auth();
   if (!session)
@@ -113,3 +114,104 @@ export const createCarAction = async (data: StreamableSkeletonProps) => {
 		return { success: false, message: "Failed to create classified" };
 	}
 };
+
+export const updateCarAction = async (data: UpdateCarType) => {
+  const session = await auth();
+  if (!session)
+  {
+    forbidden()
+  }
+
+  let success = false
+  try {
+    const makeId = Number(data.make)
+    const modelId = Number(data.model)
+    const modelVariantId = data.modelVariant ? Number(data.modelVariant) : null;
+
+    const make = await prisma.make.findUnique({
+			where: { id: makeId as number },
+		});
+
+		const model = await prisma.model.findUnique({
+			where: { id: modelId as number },
+		});
+
+		let title = `${data.year} ${make?.name} ${model?.name}`;
+
+		if (modelVariantId) {
+			const modelVariant = await prisma.modelVariant.findUnique({
+				where: { id: modelVariantId },
+			});
+
+			if (modelVariant) title = `${title} ${modelVariant.name}`;
+		}
+
+		const slug = slugify(`${title} ${data.vrm}`);
+    const [updatedCar, images] = await prisma.$transaction(
+      async (prisma) => {
+        // delete existing images if any
+        await prisma.image.deleteMany({
+          where: {
+            classifiedId: data.id,
+          },
+        })
+        // update the classified
+        const imagesData = await Promise.all(
+					data.images.map(async ({ src }, index) => {
+						const hash = await generateThumbHashFromSrUrl(data.images[0].src);
+						const uri = createPngDataUri(hash);
+						return {
+							classifiedId: data.id,
+							isMain: !index,
+							blurhash: uri,
+							src,
+							alt: `${title} ${index + 1}`,
+						};
+					}),
+				);
+
+        const images = await prisma.image.createManyAndReturn({
+					data: imagesData,
+				});
+
+        const updatedCar = await prisma.classified.update({
+					where: { id: data.id },
+					data: {
+						slug,
+						title,
+						year: Number(data.year),
+						makeId,
+						modelId,
+						...(modelVariantId && { modelVariantId }),
+						vrm: data.vrm,
+						price: data.price * 100,
+						currency: data.currency,
+						odoReading: data.odoReading,
+						odoUnit: data.odoUnit,
+						fuelType: data.fuelType,
+						bodyType: data.bodyType,
+						transmission: data.transmission,
+						colour: data.colour,
+						ulezCompliance: data.ulezCompliance,
+						description: data.description,
+						doors: data.doors,
+						seats: data.seats,
+						status: data.status,
+						images: { set: images.map((image) => ({ id: image.id })) },
+					},
+				});
+
+        return [updatedCar, images];
+      },
+      {timeout: 10000} // Set a timeout for the transaction
+    )
+  } catch (err) {
+    console.log({ err });
+		if (err instanceof Error) {
+			return { success: false, message: err.message };
+		}
+		return { success: false, message: "Something went wrong" };
+  }
+
+ 
+}
