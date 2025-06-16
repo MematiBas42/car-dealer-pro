@@ -24,7 +24,12 @@ export async function generateCar(
 
     let car = {image}
     uiStream.update(<StreamableSkeletion {...car} />)
-    return null
+    return {
+        id: Date.now(),
+        display: uiStream.value,
+        role: "assistant" as const,
+        car: valueStream.value,
+    }
 }
 
 export type ClientMessage = {
