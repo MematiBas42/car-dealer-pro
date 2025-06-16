@@ -9,6 +9,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from "../ui/form";
+import { NumberInput } from "./number-input";
 
 
 interface InputSelectProps extends NumericFormatProps {
@@ -32,15 +33,15 @@ const InputSelect = (props: InputSelectProps) => {
 					<FormItem>
 						{label && <FormLabel htmlFor={inputName}>{label}</FormLabel>}
 						<FormControl>
-							{/* <NumberInput
+							<NumberInput
 								style={{ backgroundColor: "#081a2b" }}
-								className="text-muted/75"
+								className="text-gray-500"
 								onValueChange={(values) => {
 									onChange(values.floatValue);
 								}}
 								{...rest}
 								{...numberInputProps}
-							/> */}
+							/>
 						</FormControl>
 						<FormMessage />
 					</FormItem>
@@ -55,7 +56,7 @@ const InputSelect = (props: InputSelectProps) => {
 							<div className="absolute right-0 -translate-y-10 h-10 flex items-center pr-2 border-l border-l-white/10 border-input">
 								<select
 									className={cn(
-										"custom-select appearance-none pr-10 bg-no-repeat disabled:bg-white/10 border rounded-md focus:outline-hidden focus:ring-0 focus-visible:ring-0 pl-3 text-muted/75 border-transparent",
+										"custom-select appearance-none pr-10 bg-no-repeat disabled:bg-white/10 border rounded-md focus:outline-hidden focus:ring-0 focus-visible:ring-0 pl-3 text-gray-500 border-transparent",
 									)}
 									{...rest}
 								>

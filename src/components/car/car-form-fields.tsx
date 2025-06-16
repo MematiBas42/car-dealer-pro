@@ -30,6 +30,8 @@ import { Input } from "../ui/input";
 import { Select } from "../ui/select";
 import { Skeleton } from "../ui/skeleton";
 import TaxonomySelect from "./TaxonomySelect";
+import InputSelect from "../ui/input-select";
+import { NumberInput } from "../ui/number-input";
 
 const years = generateYears(1925);
 const CarFormField = () => {
@@ -56,7 +58,215 @@ const CarFormField = () => {
           </FormItem>
         )}
       />
-      <TaxonomySelect/>
+      <TaxonomySelect />
+      <InputSelect
+        options={Object.values(CurrencyCode).map((currency) => ({
+          label: currency,
+          value: currency,
+        }))}
+        label="Price"
+        inputName="price"
+        selectName="currency"
+        inputMode="numeric"
+        placeholder="0"
+        className="h-10"
+      />
+      <InputSelect
+        options={Object.values(OdoUnit).map((value) => ({
+          label: value,
+          value,
+        }))}
+        label="Odometer Reading"
+        inputName="odoReading"
+        selectName="odoUnit"
+        inputMode="numeric"
+        placeholder="0"
+        className="h-10"
+      />
+      <FormField
+				control={form.control}
+				name="transmission"
+				render={({ field: { ref, ...rest } }) => (
+					<FormItem>
+						<FormLabel htmlFor="transmission">Transmission</FormLabel>
+						<FormControl>
+							<Select
+								selectClassName="text-gray-500 bg-primary-800 border-transparent"
+								options={Object.values(Transmission).map((value) => ({
+									label: formatTransmission(value),
+									value,
+								}))}
+								{...rest}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="fuelType"
+				render={({ field: { ref, ...rest } }) => (
+					<FormItem>
+						<FormLabel htmlFor="fuelType">Fuel Type</FormLabel>
+						<FormControl>
+							<Select
+								selectClassName="text-gray-500 bg-primary-800 border-transparent"
+								options={Object.values(FuelType).map((value) => ({
+									label: formatFuelType(value),
+									value,
+								}))}
+								{...rest}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="bodyType"
+				render={({ field: { ref, ...rest } }) => (
+					<FormItem>
+						<FormLabel htmlFor="bodyType">Body Type</FormLabel>
+						<FormControl>
+							<Select
+								selectClassName="text-gray-500 bg-primary-800 border-transparent"
+								options={Object.values(BodyType).map((value) => ({
+									label: formatBodyType(value),
+									value,
+								}))}
+								{...rest}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="colour"
+				render={({ field: { ref, ...rest } }) => (
+					<FormItem>
+						<FormLabel htmlFor="colour">Colour</FormLabel>
+						<FormControl>
+							<Select
+								selectClassName="text-gray-500 bg-primary-800 border-transparent"
+								options={Object.values(Colour).map((value) => ({
+									label: formatColour(value),
+									value,
+								}))}
+								{...rest}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="ulezCompliance"
+				render={({ field: { ref, ...rest } }) => (
+					<FormItem>
+						<FormLabel htmlFor="ulezCompliance">ULEZ Compliance</FormLabel>
+						<FormControl>
+							<Select
+								selectClassName="text-gray-500 bg-primary-800 border-transparent"
+								options={Object.values(ULEZCompliance).map((value) => ({
+									label: (value),
+									value,
+								}))}
+								{...rest}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+
+			<FormField
+				control={form.control}
+				name="vrm"
+				render={({ field: { ref, ...rest } }) => (
+					<FormItem>
+						<FormLabel htmlFor="vrm">Vehicle Registration Mark</FormLabel>
+						<FormControl>
+							<Input
+								placeholder="LA16 PYW"
+								className="uppercase text-muted h-10 mt-1 bg-primary-800 placeholder:text-gray-500"
+								{...rest}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="doors"
+				render={({ field: { onChange, ...rest } }) => (
+					<FormItem>
+						<FormLabel htmlFor="doors">Doors</FormLabel>
+						<FormControl>
+							<NumberInput
+								max={6}
+								min={1}
+								placeholder="0"
+								style={{ background: "#081a2b" }}
+								className="text-muted placeholder:text-gray-500"
+								onValueChange={(values) => {
+									onChange(values.floatValue);
+								}}
+								{...rest}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<FormField
+				control={form.control}
+				name="seats"
+				render={({ field: { onChange, ...rest } }) => (
+					<FormItem>
+						<FormLabel htmlFor="seats">Seats</FormLabel>
+						<FormControl>
+							<NumberInput
+								max={8}
+								min={1}
+								placeholder="0"
+								style={{ background: "#081a2b" }}
+								className="text-muted placeholder:text-gray-500"
+								onValueChange={(values) => {
+									onChange(values.floatValue);
+								}}
+								{...rest}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
+				)}
+			/>
+			<div className="col-span-2">
+				<FormField
+					control={form.control}
+					name="description"
+					render={({ field: { onChange, ...rest } }) => (
+						<FormItem>
+							<FormControl>
+								{/* <RichTextEditor
+									label="Description"
+									config={{
+										init: { placeholder: "Enter your vehicle's description" },
+									}}
+									{...rest}
+								/> */}
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+			</div>
     </div>
   );
 };
