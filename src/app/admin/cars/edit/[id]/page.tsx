@@ -1,4 +1,5 @@
 import { validateIdSchema } from '@/app/schemas/form.schema'
+import CarForm from '@/components/car/car-form'
 import { routes } from '@/config/routes'
 import { PageProps } from '@/config/types'
 import { prisma } from '@/lib/prisma'
@@ -28,10 +29,12 @@ const EditcarPage = async (props : PageProps) => {
     redirect(routes.admin.cars)
   }
 
-  console.log(car)
+  //console.log(car)
   return (
     <div>
-      
+      <CarForm
+        car={car}
+      />
     </div>
   )
 }

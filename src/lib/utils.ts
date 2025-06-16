@@ -254,3 +254,14 @@ export function calculatePercentageChange(current: number, previous: number) {
 
 	return ((current - previous) / Math.abs(previous)) * 100;
 }
+
+export function generateYears(minYear: number, maxYear?: number): string[] {
+	const currentYear = maxYear ? maxYear : new Date().getFullYear();
+	const years: string[] = [];
+
+	for (let year = currentYear; year >= minYear; year--) {
+		years.push(`${year}`);
+	}
+
+	return years;
+}
