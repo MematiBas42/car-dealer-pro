@@ -1,4 +1,7 @@
 
+import { endpoints } from "@/config/endpoints";
+import { api } from "./api-client";
+
 interface FilePart {
     PartNumber: number;
     ETag: string;
@@ -71,6 +74,40 @@ export class Uploader {
 			if (ext) {
 				fileName += `${name?.replace(/\s+/g, "-")}.${ext}`;
 			} else fileName += name;
+
+            const imageInitialisationUploadInput = {
+				name: fileName,
+				uuid: this.uuid,
+			};
+
+            const AWSFiledataOutout = await api.post
+            <{
+                fileId :  string, 
+                fileKey : string
+            }>(endpoints.images.initMultipartUpload,
+                {json: imageInitialisationUploadInput}
+            )
+
+            this.fileId = AWSFiledataOutout.fileId;
+            this.fileKey = AWSFiledataOutout.fileKey;
+
+			// retrieve the pre-signed URLs from AWS
+			const numberOfParts = Math.ceil(Number(this.file?.size) / this.chunkSize);
+
+            const AWSMultipartFileDataInput = {
+				fileId: this.fileId,
+				fileKey: this.fileKey,
+				parts: numberOfParts,
+			};
+
+			const urlsResponse = await api.post<{ parts: FilePart[] }>(
+				endpoints.images.getMultipartUpload,
+				{
+					json: AWSMultipartFileDataInput,
+				},
+			);
+
+
         } catch (error) {
             
         }
