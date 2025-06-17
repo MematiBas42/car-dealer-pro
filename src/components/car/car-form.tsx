@@ -20,6 +20,7 @@ import { Select } from "../ui/select";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { formatCarStatus } from "@/lib/utils";
+import MultiImageUploader from "./mutil-image-uploader";
 interface CarFormProps {
   car: CarWithImages;
 }
@@ -100,7 +101,7 @@ const CarForm = ({ car }: CarFormProps) => {
                     Images (up to 8)
                   </FormLabel>
                   <FormControl>
-                    {/* <MultiImageUploader name={name} onChange={onChange} /> */}
+                     <MultiImageUploader name={name} onChange={onChange} /> 
                   </FormControl>
                   <FormMessage />
                 </FormItem>

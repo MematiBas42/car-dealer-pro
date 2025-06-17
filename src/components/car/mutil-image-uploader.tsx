@@ -2,13 +2,16 @@
 import { UpdateCarType } from "@/app/schemas/car.schema";
 import React, { useCallback, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { z } from "zod";
+
 import {v4 as uuidv4} from "uuid"
 import { generateThumbHashFromFile } from "@/lib/thumbhash-client";
 import { createPngDataUri } from "unlazy/thumbhash";
-type CarImages = UpdateCarType["images"];
+import { ProcessArgs, Uploader } from "@/lib/uploader";
+import { da } from "@faker-js/faker";
+import { cn } from "@/lib/utils";
+export type CarImages = UpdateCarType["images"];
 interface MultiImageUploaderProps
-  extends React.HTMLAttributes<HTMLInputElement> {
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
@@ -67,9 +70,50 @@ const MultiImageUploader = (props: MultiImageUploaderProps) => {
       newImagedata.push(data);
       id++;
       const options = {file, uuid}
+      const uploader = new Uploader(options)
+      uploader.onProgress((progress: ProcessArgs) => {
+        if (progress.percentage !== data.percentage) {
+          data.src = `${process.env.NEXT_PUBLIC_S3_BUCKET_URL}/${progress.key}`;
+          data.key = progress.key || '';
+          handleItemProgress({
+            uuid, 
+            progress: progress.percentage,
+          })
+
+          const clone = items.concat(newImagedata)
+          setItems(clone);
+        }
+      }).onError((error: Error) => {
+        setIsUploading(false);
+        console.error("Upload error:", error);
+      }).onComplete(() => {
+        data.done = true;
+        const clone = items.concat(newImagedata).map((item) => ({
+          ...item,
+          percentage: 100,
+          
+        }))
+        setItems(clone);
+        replace(clone.map((item) => ({
+          src: item.src,
+          alt: item.alt,
+        })))
+        setIsUploading(false);
+      })
+      uploader.start();
     }
-  }, []);
-  return <div></div>;
+  }, [items, handleItemProgress, replace]);
+
+  const remove = (i: number) => {
+    setItems((prev) => prev.filter((item) => item.id !== i));
+    replace(items.filter((item) => item.id !== i));
+  }
+  return <div className={cn(`space-y-3`)}>
+    {/* drag and drop */}
+    <div className="relative overflow-hidden rounded-lg">
+      {/* grag and grop context */}
+    </div>
+  </div>;
 };
 
 export default MultiImageUploader;

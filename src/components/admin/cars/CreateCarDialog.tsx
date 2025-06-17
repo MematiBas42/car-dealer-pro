@@ -84,7 +84,7 @@ const CreateCarDialog = () => {
     });
   };
   return (
-    <Dialog open={true} onOpenChange={() => console.log("Dialog closed")}>
+    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <DialogTrigger asChild>
         <Button className="ml-4" size={"sm"}>
           Add new
