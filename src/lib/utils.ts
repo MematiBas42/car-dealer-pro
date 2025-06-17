@@ -265,3 +265,18 @@ export function generateYears(minYear: number, maxYear?: number): string[] {
 
 	return years;
 }
+
+
+export function formatCarStatus (status: ClassifiedStatus) {
+  switch (status) {
+    case ClassifiedStatus.LIVE:
+      return "Live";
+    
+    case ClassifiedStatus.SOLD:
+      return "Sold";
+    case ClassifiedStatus.DRAFT:
+      return "Draft";
+    default:
+      return "Unknown";
+  }
+}

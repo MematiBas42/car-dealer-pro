@@ -16,7 +16,7 @@ import {
   Transmission,
   ULEZCompliance,
 } from "@prisma/client";
-import dynamic from "next/dynamic";
+
 import { useFormContext } from "react-hook-form";
 import {
   FormControl,
@@ -32,6 +32,22 @@ import { Skeleton } from "../ui/skeleton";
 import TaxonomySelect from "./TaxonomySelect";
 import InputSelect from "../ui/input-select";
 import { NumberInput } from "../ui/number-input";
+import dynamic from "next/dynamic";
+
+
+
+const RichTextEditor = dynamic(
+	() => import("./rich-text-editor").then((mod) => mod.RichTextEditor),
+	{
+		ssr: false,
+		loading: () => (
+			<div className="space-y-2 flex flex-col">
+				<Skeleton className="w-24 h-4 bg-primary-800" />
+				<Skeleton className="h-[200px] w-full bg-primary-800" />
+			</div>
+		),
+	},
+);
 
 const years = generateYears(1925);
 const CarFormField = () => {
@@ -254,13 +270,13 @@ const CarFormField = () => {
 					render={({ field: { onChange, ...rest } }) => (
 						<FormItem>
 							<FormControl>
-								{/* <RichTextEditor
+								<RichTextEditor
 									label="Description"
 									config={{
 										init: { placeholder: "Enter your vehicle's description" },
 									}}
 									{...rest}
-								/> */}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>

@@ -2,14 +2,24 @@
 import { updateCarSchema, UpdateCarType } from "@/app/schemas/car.schema";
 import { CarWithImages } from "@/config/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CurrencyCode, Prisma } from "@prisma/client";
+import { ClassifiedStatus, CurrencyCode, Prisma } from "@prisma/client";
 import React, { useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Form } from "../ui/form";
 import { updateCarAction } from "@/app/_actions/car";
 import { toast } from "sonner";
 import CarFormField from "./car-form-fields";
-
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { Select } from "../ui/select";
+import { Button } from "../ui/button";
+import { Loader2 } from "lucide-react";
+import { formatCarStatus } from "@/lib/utils";
 interface CarFormProps {
   car: CarWithImages;
 }
@@ -80,6 +90,56 @@ const CarForm = ({ car }: CarFormProps) => {
         </h1>
         <div className="w-full mx-auto grid grid-cols-2 gap-6">
           <CarFormField />
+          <div className="space-y-6">
+            <FormField
+              control={form.control}
+              name="images"
+              render={({ field: { name, onChange } }) => (
+                <FormItem>
+                  <FormLabel className="text-muted" htmlFor="images">
+                    Images (up to 8)
+                  </FormLabel>
+                  <FormControl>
+                    {/* <MultiImageUploader name={name} onChange={onChange} /> */}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field: { ref, ...rest } }) => (
+                <FormItem>
+                  <FormLabel className="text-muted" htmlFor="status">
+                    Status
+                  </FormLabel>
+                  <FormControl>
+                    <Select
+                      options={Object.values(ClassifiedStatus).map((value) => ({
+                        label: formatCarStatus(value),
+                        value,
+                      }))}
+                      noDefault={false}
+                      selectClassName="bg-primary-800 border-transparent text-muted/75"
+                      {...rest}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button
+              disabled={isPending}
+              type="submit"
+              className="w-full flex gap-x-2"
+            >
+              {isPending && <Loader2 className="animate-spin h-4 w-4" />}
+              Submit
+            </Button>
+          </div>
         </div>
       </form>
     </Form>
