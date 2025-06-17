@@ -10,6 +10,26 @@ import { ProcessArgs, Uploader } from "@/lib/uploader";
 import { da } from "@faker-js/faker";
 import { cn } from "@/lib/utils";
 import DragAndDrop from "./drag-and-drop";
+import dynamic from "next/dynamic";
+import { SortableItem } from "./SortableItem";
+import { Skeleton } from "../ui/skeleton";
+
+
+const DragAndDropContext = dynamic(
+	() => import("./drag-and-grop-context").then((mod) => mod.DragAndDropContext),
+	{
+		ssr: false,
+		loading: () => (
+			<div className="gap-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
+				{[1, 2, 3, 4, 5, 6].map((i) => (
+					<Skeleton key={i} className="aspect-3/2 rounded-md w-full" />
+				))}
+			</div>
+		),
+	},
+);
+
+
 export type CarImages = UpdateCarType["images"];
 interface MultiImageUploaderProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -120,7 +140,7 @@ const MultiImageUploader = (props: MultiImageUploaderProps) => {
     replace(items.filter((item) => item.id !== i));
   };
   return (
-    <div className={cn(`space-y-3`)}>
+    <div className={cn( className, `space-y-3 mt-1`)}>
       <DragAndDrop
         isUploading={isUploading}
         setIsUploading={setIsUploading}
@@ -129,6 +149,21 @@ const MultiImageUploader = (props: MultiImageUploaderProps) => {
       />
       <div className="relative overflow-hidden rounded-lg">
         {/* grag and grop context */}
+        <DragAndDropContext 
+        replace={handleItemUpdate}
+        items={items}
+        renderItem={(item) => (
+          <SortableItem 
+            key={item.uuid}
+            index={item.id as number}
+            item={item}
+            remove={remove}
+            progress={
+              progress.find((p) => p.uuid === item.uuid)?.progress as number
+            }
+          />
+        )}
+          />
       </div>
     </div>
   );

@@ -135,7 +135,7 @@ const CarForm = ({ car }: CarFormProps) => {
             <Button
               disabled={isPending}
               type="submit"
-              className="w-full flex gap-x-2"
+              className="w-full flex gap-x-2 bg-yellow-400"
             >
               {isPending && <Loader2 className="animate-spin h-4 w-4" />}
               Submit
