@@ -89,7 +89,7 @@ const CarForm = ({ car }: CarFormProps) => {
         <h1 className="text-3xl font-bold mb-6 text-muted">
           Upload vehicles details
         </h1>
-        <div className="w-full mx-auto grid grid-cols-2 gap-6">
+        <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
           <CarFormField />
           <div className="space-y-6">
             <FormField

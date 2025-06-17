@@ -1,5 +1,6 @@
 import { CarFilterSchema } from "@/app/schemas/car.schema";
 import { AwaitedPageProps } from "@/config/types";
+import prettyBytes from "pretty-bytes";
 import {
   BodyType,
   ClassifiedStatus,
@@ -280,3 +281,11 @@ export function formatCarStatus (status: ClassifiedStatus) {
       return "Unknown";
   }
 }
+
+export const convertToMb = (bytes: number) => {
+	return prettyBytes(bytes, {
+		bits: false,
+		maximumFractionDigits: 1,
+		space: false,
+	});
+};
