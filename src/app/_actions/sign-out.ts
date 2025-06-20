@@ -12,3 +12,13 @@ export const signOutAction = async () => {
 		});
 	}
 }
+
+export const logoutOfAllSessions = async () => {
+	const session = await auth();
+	if (!session?.user?.id) return null;
+	await prisma.session.deleteMany({
+		where: { userId: session.user.id },
+	});
+
+	redirect(routes.signIn);
+};
