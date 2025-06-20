@@ -89,6 +89,7 @@ const CarsPage = async (props: PageProps) => {
         </TableBody>
         <AdminTableFooter
           disabled={cars.length === 0}
+          searchParams={searchParams}
           totalPages={totalPages}
           baseURL={routes.admin.cars}
           cols={9}

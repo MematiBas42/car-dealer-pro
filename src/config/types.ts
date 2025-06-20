@@ -20,6 +20,10 @@ export type CarWithImages = Prisma.ClassifiedGetPayload<{
     }
 }>
 
+export type CustomerWithCar = Prisma.CustomerGetPayload<{
+	include: { classified: true };
+}>;
+
 export enum MultiStepFormEnum {
     WELCOME = 1,
     SELECT_DATE = 2,
@@ -59,4 +63,17 @@ export type CarKeys = keyof Pick<
 	| "colour"
 	| "price"
 	| "createdAt"
+>;
+export type CustomerKeys = keyof Pick<
+	Prisma.CustomerGetPayload<{ include: { classified: true } }>,
+	| "id"
+	| "email"
+	| "mobile"
+	| "firstName"
+	| "lastName"
+	| "updatedAt"
+	| "createdAt"
+	| "status"
+	| "bookingDate"
+	| "classified"
 >;

@@ -1,7 +1,24 @@
 
-import { stringMap } from "aws-sdk/clients/backup";
 import { z } from "zod";
+export const CustomersTableSortSchema = z.object({
+	order: z.enum(["asc", "desc"]).default("desc"),
+	sort: z
+		.enum([
+			"id",
+			"email",
+			"mobile",
+			"firstName",
+			"lastName",
+			"updatedAt",
+			"createdAt",
+			"status",
+			"bookingDate",
+			"classified",
+		])
+		.default("createdAt"),
+});
 
+export type CustomersTableSortType = z.infer<typeof CustomersTableSortSchema>;
 
 export const CarsTableSortSchema = z.object({
 	order: z.enum(["asc", "desc"]).default("desc"),
@@ -28,7 +45,7 @@ interface ValidateSortOrderArgs<TSchemaType>  {
     sort: string;
     order: string;
     schema: TSchemaType extends CarsTableSortType ? typeof CarsTableSortSchema 
-    : typeof CarsTableSortSchema;
+    : typeof CustomersTableSortSchema;
 
 }
 export function validateSortOrder<TSchemaType>(

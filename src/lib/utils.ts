@@ -6,6 +6,7 @@ import {
   ClassifiedStatus,
   Colour,
   CurrencyCode,
+  CustomerStatus,
   FuelType,
   OdoUnit,
   Prisma,
@@ -289,3 +290,18 @@ export const convertToMb = (bytes: number) => {
 		space: false,
 	});
 };
+
+export function formatCustomerStatus(status: CustomerStatus) {
+	switch (status) {
+		case CustomerStatus.COLD:
+			return "Cold";
+		case CustomerStatus.CONTACTED:
+			return "Contacted";
+		case CustomerStatus.INTERESTED:
+			return "Interested";
+		case CustomerStatus.PURCHASED:
+			return "Purchased";
+		case CustomerStatus.SUBSCRIBER:
+			return "Subscriber";
+	}
+}
