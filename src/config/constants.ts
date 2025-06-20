@@ -1,3 +1,5 @@
+import { BadgeProps } from "@/components/ui/badge";
+import { ClassifiedStatus } from "@prisma/client";
 
 export const imageSources = {
     classifiedPlaceholder: `https://meat-motors.imgix.net/placeholder.jpg`,
@@ -70,3 +72,13 @@ Return only the structured JSON object, with no extra text or explanation.
         `.trim()
 
 export const MAX_IMAGES = 8
+
+
+export const sortOrder = ["asc", "desc"] as const;
+
+export const CarBadgeMap : Record<ClassifiedStatus,BadgeProps['variant']  >= {
+        [ClassifiedStatus.DRAFT]: "secondary",
+	[ClassifiedStatus.LIVE]: "default",
+	[ClassifiedStatus.SOLD]: "destructive",
+
+}

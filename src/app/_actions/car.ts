@@ -219,3 +219,27 @@ export const updateCarAction = async (data: UpdateCarType) => {
     return { success: false, message: "Failed to update classified" };
   }
 };
+
+
+export const deleteCarAction = async (id: number) => {
+  const session = await auth();
+  if (!session) {
+    forbidden();
+  }
+
+  try {
+    const deletedCar = await prisma.classified.delete({
+      where: { id },
+    });
+
+    if (deletedCar) {
+      revalidatePath(routes.admin.cars);
+      return { success: true, message: "Car deleted successfully" };
+    } else {
+      return { success: false, message: "Failed to delete car" };
+    }
+  } catch (error) {
+    console.error("Error deleting car:", error);
+    return { success: false, message: "Failed to delete car" };
+  }
+}
