@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import NextTopLoader from "nextjs-toploader";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { cn } from "@/lib/utils";
+import { Suspense } from "react";
 
 const mulish = Mulish({
 	weight: "variable",
@@ -41,7 +42,11 @@ export default function RootLayout({
 				)}
 			>
         <NextTopLoader showSpinner={true} />
-        <NuqsAdapter>{children}</NuqsAdapter>
+        <NuqsAdapter>
+			<Suspense>
+				{children}
+			</Suspense>
+		</NuqsAdapter>
         <Toaster />
       </body>
     </html>
