@@ -41,30 +41,30 @@ const SalesCharts = (props: SalesChartsProps) => {
           <ResponsiveContainer width="100%" height={500}>
             <BarChart data={chartData}>
               <XAxis
-                dataKey="month"
-                stroke="#8884d8"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
+              dataKey="month"
+              stroke="#60a5fa"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
               />
               <YAxis
-                stroke="#8884d8"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) =>
-                  formatPrice({ price: value, currency: "EUR" })
-                }
+              stroke="#60a5fa"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) =>
+                formatPrice({ price: value, currency: "EUR" })
+              }
               />
               <Tooltip
-							content={<CustomTooltip />}
-							cursor={{ fill: "transparent" }}
-						/>
-						<Bar
-							dataKey="sales"
-							fill="hsl(var(--primary))"
-							radius={[4, 4, 0, 0]}
-						/>
+                    content={<CustomTooltip />}
+                    cursor={{ fill: "transparent" }}
+                  />
+                  <Bar
+                    dataKey="sales"
+                    fill="#3b82f6"
+                    radius={[4, 4, 0, 0]}
+                  />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
@@ -82,7 +82,7 @@ const CustomTooltip = ({
 		return (
 			<div className="bg-gray-800 border border-gray-700 p-2 rounded">
 				<p className="text-gray-100">
-					{`${label}: ${formatPrice({ price: payload[0].value as number, currency: "GBP" })}`}
+					{`${label}: ${formatPrice({ price: payload[0].value as number, currency: "EUR" })}`}
 				</p>
 			</div>
 		);

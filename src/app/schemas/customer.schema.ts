@@ -1,4 +1,5 @@
 
+import { CustomerStatus } from "@prisma/client";
 import slug from "slug";
 import { z } from "zod";
 export const SubmitDetailsSchema = z.object({
@@ -20,3 +21,14 @@ export const CreateCustomerSchema = SubmitDetailsSchema.extend({
 })
 
 export type CreateCustomerType = z.infer<typeof CreateCustomerSchema>;
+
+export const editCustomerSchema = z.object({
+	status: z.nativeEnum(CustomerStatus)
+})
+
+export type EditCustomerType = z.infer<typeof editCustomerSchema>;
+
+
+export const UpdateCustomerSchema = editCustomerSchema.extend({
+	id: z.number()
+})

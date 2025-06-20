@@ -4,9 +4,12 @@ import { prisma } from "@/lib/prisma";
 import {
   CreateCustomerSchema,
   CreateCustomerType,
+  UpdateCustomerSchema,
 } from "../schemas/customer.schema";
 import { revalidatePath } from "next/cache";
 import { routes } from "@/config/routes";
+import { CustomerStatus } from "@prisma/client";
+
 
 export const createCustomerAction = async (props: CreateCustomerType) => {
   try {
@@ -73,3 +76,59 @@ export const deleteCustomerAction = async (id: number) => {
 		};
 	}
 };
+
+export const updateCustomerAction = async ({
+  id,
+  status,
+}: {
+  id: number;
+  status: CustomerStatus;
+}) => {
+  try {
+    const validProps = UpdateCustomerSchema.safeParse({ id, status });
+    if (!validProps.success) return {
+      success: false,
+      message: "Invalid data",
+    }
+
+    const customer = await prisma.customer.findUnique({
+      where: {
+        id: validProps.data?.id,
+      }
+    })
+
+    if (!customer) {
+      return {
+        success: false,
+        message: "Customer not found",
+      };
+    }
+
+    await prisma.customer.update({
+      where: {
+        id: validProps.data?.id,
+      },
+      data: {
+        status: validProps.data?.status,
+        lifecycle: {
+          create: {
+            oldStatus: customer.status,
+            newStatus: validProps.data.status,
+          }
+        }
+      }
+    })
+    revalidatePath(routes.admin.editCustomer(customer.id));
+    revalidatePath(routes.admin.customers);
+    return {
+      success: true,
+      message: "Customer updated successfully",
+    };
+  } catch (error) {
+    console.log("Error updating customer: ", { error });
+    return {
+      success: false,
+      message: "Something went wrong updating customer",
+    }
+  }
+}
