@@ -8,7 +8,9 @@ import {
 import CarManageHeader from "@/components/admin/cars/cars-header";
 import CarsTableRow from "@/components/car/car-table-row";
 import CarTableHeader from "@/components/car/CarTableHeader";
+import { AdminTableFooter } from "@/components/shared/admin-table-footer";
 import { Table, TableBody } from "@/components/ui/table";
+import { routes } from "@/config/routes";
 import { CarKeys, PageProps } from "@/config/types";
 import { prisma } from "@/lib/prisma";
 import React from "react";
@@ -85,7 +87,12 @@ const CarsPage = async (props: PageProps) => {
               car={car}/>
           ))}
         </TableBody>
-        {/* footer */}
+        <AdminTableFooter
+          disabled={cars.length === 0}
+          totalPages={totalPages}
+          baseURL={routes.admin.cars}
+          cols={9}
+        />
       </Table>
     </>
   );

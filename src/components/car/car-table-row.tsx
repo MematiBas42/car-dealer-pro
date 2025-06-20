@@ -40,7 +40,7 @@ const CarsTableRow = ({ car }: { car: CarWithImages }) => {
         <TableCell className="hidden md:table-cell">
             {format(car.createdAt, "dd/MM/yyyy")}
         </TableCell>
-        <TableCell className="hidden md:table-cell">
+        <TableCell>
             {car.views}
         </TableCell>
         <TableCell className="flex gap-x-2">

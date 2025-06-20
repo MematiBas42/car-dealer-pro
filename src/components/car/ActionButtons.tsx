@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 import { EyeIcon, Loader2, PencilIcon, Trash } from "lucide-react";
 import Link from "next/link";
 import { routes } from "@/config/routes";
-
+import { Tooltip } from "react-tooltip";
 const ActionButtons = ({ car }: { car: CarWithImages }) => {
   const [isPending, startTransition] = useTransition();
   const deleteCar = (id: number) => {
@@ -26,29 +26,42 @@ const ActionButtons = ({ car }: { car: CarWithImages }) => {
     });
   };
   return (
-    <div>
+    <>
       <Button
         variant={"destructive"}
         className="p-2 h-fit"
         onClick={() => deleteCar(car.id)}
+        data-tooltip-id="trash-tooltip"
+        data-tooltip-content="Delete Car"
       >
+        <Tooltip id="trash-tooltip" />
         {isPending ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
           <Trash className="h-4 w-4" />
         )}
       </Button>
-      <Button className="p-2 h-fit" asChild>
+      <Button
+        className="p-2 h-fit"
+        asChild
+        data-tooltip-id="view-tooltip"
+        data-tooltip-content="View Car"
+      >
         <Link href={routes.singleClassified(car.slug)}>
+          <Tooltip id="view-tooltip" />
           <EyeIcon className="h-4 w-4" />
         </Link>
       </Button>
-      <Button variant={"secondary"} className="p-2 h-fit" asChild>
+      <Button variant={"secondary"} className="p-2 h-fit" asChild
+        data-tooltip-id="edit-tooltip"
+        data-tooltip-content="Edit Car"
+      >
         <Link href={routes.admin.editCar(car.id)}>
+            <Tooltip id="edit-tooltip" />
           <PencilIcon className="h-4 w-4" />
         </Link>
       </Button>
-    </div>
+    </>
   );
 };
 
