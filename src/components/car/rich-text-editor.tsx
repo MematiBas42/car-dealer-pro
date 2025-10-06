@@ -80,7 +80,7 @@ export const RichTextEditor = (props: TextEditorProps) => {
 				{...props.config}
 				init={init}
 				value={value}
-				apiKey={'2a6eppnp79qc7u2c09475v5eic1kse0llyzejb80htgc2i1n'}
+				apiKey={process.env.NEXT_PUBLIC_TINYMCE_API_KEY}
 				onEditorChange={handleEditorChange}
 			/>
 		</div>
