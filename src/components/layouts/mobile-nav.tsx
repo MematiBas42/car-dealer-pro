@@ -84,6 +84,7 @@ export function MobileNav({ isLoggedIn, favCount }: MobileNavProps) {
 
         {/* Sticky Footer Area */}
         <div className="flex-shrink-0 border-t border-border pt-4 flex items-center justify-between">
+          {/* Theme Toggle on the left */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
@@ -92,22 +93,25 @@ export function MobileNav({ isLoggedIn, favCount }: MobileNavProps) {
                 <span className="sr-only">Toggle theme</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="start">
               <DropdownMenuItem onClick={() => setTheme("light")}>Light</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme("dark")}>Dark</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme("system")}>System</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
+          {/* Admin Dashboard link in the center */}
           {isLoggedIn && (
-            <div className="flex items-center gap-2">
-                <Link href={routes.admin.dashboard} passHref onClick={handleLinkClick}>
-                    <Button variant="ghost" size="icon">
-                        <LayoutDashboard className="h-5 w-5" />
-                    </Button>
-                </Link>
-                <SignoutForm />
-            </div>
+            <Link href={routes.admin.dashboard} passHref onClick={handleLinkClick}>
+                <Button variant="ghost" size="icon">
+                    <LayoutDashboard className="h-5 w-5" />
+                </Button>
+            </Link>
+          )}
+
+          {/* Signout form on the right */}
+          {isLoggedIn && (
+            <SignoutForm />
           )}
         </div>
       </SheetContent>

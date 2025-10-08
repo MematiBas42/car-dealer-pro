@@ -55,7 +55,7 @@ export const CustomersTableHeader = (props: CustomersTableHeaderProps) => {
 	};
 
 	return (
-		<TableHeader>
+		<TableHeader className="hidden md:table-header-group">
 			<TableRow className="hover:bg-transparent border-primary-800">
 				<TableHead className="text-muted w-[80px]">
 					<div

@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export const AdminCustomersHeader = ({ searchParams }: AwaitedPageProps) => {
 	return (
-		<div className="flex flex-col p-6 space-y-4">
+		<div className="hidden md:flex flex-col p-6 space-y-4">
 			<div className="flex items-center justify-between">
 				<h1 className="font-semibold text-lg md:text-2xl text-slate-200">All Customers</h1>
 				<div className="flex items-center justify-end gap-x-4">

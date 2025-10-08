@@ -1,47 +1,70 @@
-import { CustomerBadgeMap } from "@/config/constants";
-import type { CustomerWithCar } from "@/config/types";
-import { formatCustomerStatus } from "@/lib/utils";
-import { format } from "date-fns";
+'use client';
+import React from "react";
+import { CustomerWithCar } from "@/config/types";
+import { TableCell, TableRow } from "../../ui/table";
+import { format, formatDistanceToNow } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-
+import { CustomerBadgeMap } from "@/config/constants";
+import { formatCustomerStatus } from "@/lib/utils";
 import { CustomerActionButtons } from "./action-button";
-import { TableCell, TableRow } from "@/components/ui/table";
 
 export const CustomerTableRow = (customer: CustomerWithCar) => {
-	return (
-		<TableRow className="text-muted/75 border-white/5 hover:bg-primary-300">
-			<TableCell className="font-medium">{customer.id}</TableCell>
-			<TableCell className="font-medium">
-				<Badge
-					className="text-muted/75"
-					variant={CustomerBadgeMap[customer.status]}
-				>
-					{formatCustomerStatus(customer.status)}
-				</Badge>
-			</TableCell>
-			<TableCell className="hidden md:table-cell">
-				{customer.firstName} {customer.lastName}
-			</TableCell>
-			<TableCell className="hidden md:table-cell">{customer.email}</TableCell>
-			<TableCell className="hidden md:table-cell">{customer.mobile}</TableCell>
-			<TableCell className="hidden md:table-cell">
-				{customer.carTitle || customer.classified?.title || "N/A"}
-        {customer.classified?.vrm && ` (${customer.classified.vrm})`}
-			</TableCell>
-			<TableCell className="hidden md:table-cell">
-				{format(customer.createdAt, "do MMM yyy HH:mm")}
-			</TableCell>
-			<TableCell className="hidden md:table-cell">
-				{format(customer.updatedAt, "do MMM yyy HH:mm")}
-			</TableCell>
-			<TableCell>
-				{customer.bookingDate
-					? format(customer.bookingDate, "do MMM yyy HH:mm")
-					: "N/A"}
-			</TableCell>
-			<TableCell className="flex gap-x-2">
-				<CustomerActionButtons customer={customer} />
-			</TableCell>
-		</TableRow>
-	);
+  return (
+    <>
+      {/* Desktop View: Standard Table Row */}
+      <TableRow className="hidden md:table-row text-gray-400 border-gray-800">
+        <TableCell className="font-medium">{customer.id}</TableCell>
+        <TableCell>
+          <Badge variant={CustomerBadgeMap[customer.status]}>
+            {formatCustomerStatus(customer.status)}
+          </Badge>
+        </TableCell>
+        <TableCell>{`${customer.firstName} ${customer.lastName}`}</TableCell>
+        <TableCell>{customer.email}</TableCell>
+        <TableCell>{customer.mobile}</TableCell>
+        <TableCell>{customer.carTitle || customer.classified?.title || "N/A"}</TableCell>
+        <TableCell>{format(customer.updatedAt, "dd MMM yyyy")}</TableCell>
+        <TableCell>{customer.bookingDate ? format(customer.bookingDate, "dd MMM yyyy") : "N/A"}</TableCell>
+        <TableCell className="text-right">
+          <CustomerActionButtons customer={customer} />
+        </TableCell>
+      </TableRow>
+
+      {/* Mobile View: Card Layout */}
+      <div className="md:hidden p-4 mb-4 bg-gray-900/70 border border-gray-700 rounded-lg space-y-3">
+        <div className="flex justify-between items-start">
+          <div className="space-y-1">
+            <p className="text-lg font-semibold text-white">{`${customer.firstName} ${customer.lastName}`}</p>
+            <p className="text-sm text-gray-400">{customer.email}</p>
+          </div>
+          <Badge variant={CustomerBadgeMap[customer.status]}>
+            {formatCustomerStatus(customer.status)}
+          </Badge>
+        </div>
+        
+        <div className="border-t border-gray-700 pt-3 space-y-2 text-sm">
+            <div className="flex justify-between">
+                <span className="text-gray-400">Interested In:</span>
+                <span className="font-medium text-white">{customer.carTitle || customer.classified?.title || "N/A"}</span>
+            </div>
+            <div className="flex justify-between">
+                <span className="text-gray-400">Mobile:</span>
+                <span className="font-medium text-white">{customer.mobile || "N/A"}</span>
+            </div>
+            <div className="flex justify-between">
+                <span className="text-gray-400">Booking Date:</span>
+                <span className="font-medium text-white">{customer.bookingDate ? format(customer.bookingDate, "dd MMM yyyy") : "N/A"}</span>
+            </div>
+             <div className="flex justify-between">
+                <span className="text-gray-400">Last Updated:</span>
+                <span className="font-medium text-white">{formatDistanceToNow(customer.updatedAt, { addSuffix: true })}</span>
+            </div>
+        </div>
+
+        <div className="flex justify-end pt-3">
+            <CustomerActionButtons customer={customer} />
+        </div>
+      </div>
+    </>
+  );
 };
