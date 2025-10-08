@@ -309,3 +309,22 @@ export function formatCustomerStatus(status: CustomerStatus) {
 			return "Subscriber";
 	}
 }
+
+export function validatePagination({
+  page,
+  itemsPerPage,
+}: {
+  page: string;
+  itemsPerPage: string;
+}) {
+  const pageNumber = Number(page);
+  const itemsPerPageNumber = Number(itemsPerPage);
+
+  return {
+    page: !isNaN(pageNumber) && pageNumber > 0 ? pageNumber : 1,
+    itemsPerPage:
+      !isNaN(itemsPerPageNumber) && itemsPerPageNumber > 0
+        ? itemsPerPageNumber
+        : 10,
+  };
+}

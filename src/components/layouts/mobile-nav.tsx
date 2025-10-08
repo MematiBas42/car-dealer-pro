@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { HomeIcon, MenuIcon, HeartIcon, SearchIcon, LayoutDashboard, LogOutIcon, MoonIcon, SunIcon } from "lucide-react";
+import { HomeIcon, MenuIcon, HeartIcon, SearchIcon, LayoutDashboard, LogOutIcon, MoonIcon, SunIcon, ArrowLeft } from "lucide-react";
 import { useTheme } from "next-themes";
 import { routes } from "@/config/routes";
 import SignoutForm from "../auth/SignoutForm";
@@ -43,14 +43,13 @@ export function MobileNav({ isLoggedIn, favCount }: MobileNavProps) {
       <SheetContent side="right" className="w-full max-w-xs bg-background p-4 flex flex-col">
         {/* Scrollable Content Area */}
         <div className="flex-grow overflow-y-auto">
-          <nav className="grid gap-2">
-            <Link href={routes.home} onClick={handleLinkClick} className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-base font-semibold leading-7 w-full", {
-              "bg-muted text-primary": pathname === routes.home,
-              "text-foreground hover:bg-muted": pathname !== routes.home
-            })}>
-              <HomeIcon className="h-5 w-5" />
-              Home
+          <div className="mb-4 pb-4 border-b border-border">
+            <Link href={routes.home} onClick={handleLinkClick} className="flex items-center gap-2 text-base font-semibold text-foreground hover:text-primary">
+                <ArrowLeft className="h-5 w-5 text-primary" />
+                Return to Site
             </Link>
+          </div>
+          <nav className="grid gap-2">
             {navLinks.map((link) => (
               <Link key={link.id} href={link.href} onClick={handleLinkClick} className={cn("block rounded-lg px-3 py-2 text-base font-semibold leading-7 w-full", {
                 "bg-muted text-primary": pathname === link.href,
@@ -84,7 +83,6 @@ export function MobileNav({ isLoggedIn, favCount }: MobileNavProps) {
 
         {/* Sticky Footer Area */}
         <div className="flex-shrink-0 border-t border-border pt-4 flex items-center justify-between">
-          {/* Theme Toggle on the left */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
@@ -93,25 +91,22 @@ export function MobileNav({ isLoggedIn, favCount }: MobileNavProps) {
                 <span className="sr-only">Toggle theme</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
+            <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setTheme("light")}>Light</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme("dark")}>Dark</DropdownMenuItem>
               <DropdownMenuItem onClick={() => setTheme("system")}>System</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Admin Dashboard link in the center */}
           {isLoggedIn && (
-            <Link href={routes.admin.dashboard} passHref onClick={handleLinkClick}>
-                <Button variant="ghost" size="icon">
-                    <LayoutDashboard className="h-5 w-5" />
-                </Button>
-            </Link>
-          )}
-
-          {/* Signout form on the right */}
-          {isLoggedIn && (
-            <SignoutForm />
+            <div className="flex items-center gap-2">
+                <Link href={routes.admin.dashboard} passHref onClick={handleLinkClick}>
+                    <Button variant="ghost" size="icon">
+                        <LayoutDashboard className="h-5 w-5" />
+                    </Button>
+                </Link>
+                <SignoutForm />
+            </div>
           )}
         </div>
       </SheetContent>

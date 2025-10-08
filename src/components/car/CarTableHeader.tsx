@@ -51,7 +51,7 @@ const CarTableHeader = (props: CarTableHeaderProps) => {
     }
   };
   return (
-    <TableHeader>
+    <TableHeader className="hidden md:table-header-group">
       <TableRow className="hover:bg-transparent border-gray-800">
         <TableHead className="text-muted w-[80px]">
           <div

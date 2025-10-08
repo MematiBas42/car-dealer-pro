@@ -47,14 +47,14 @@ export const CustomerActionButtons = ({
 				)}
 			</Button>
 			<Button
-				data-tooltip-id="edit-tooltip"
-				data-tooltip-content="Edit"
+				data-tooltip-id="view-tooltip"
+				data-tooltip-content="View"
 				className="p-2 h-fit"
 				asChild
 			>
 				<Link href={routes.admin.editCustomer(customer.id)}>
-					<Tooltip id="edit-tooltip" />
-					<PencilIcon className="h-4 w-4 outline-none" />
+					<Tooltip id="view-tooltip" />
+					<EyeIcon className="h-4 w-4 outline-none" />
 				</Link>
 			</Button>
 		</>

@@ -1,4 +1,4 @@
-"use server";
+'use server';
 
 import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
@@ -6,6 +6,59 @@ import { forbidden, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { routes } from "@/config/routes";
 import { CreateCustomerType, EditCustomerType } from "@/app/schemas/customer.schema";
+import { CustomerStatus, Prisma } from "@prisma/client";
+import { CustomerKeys } from "@/app/schemas/table-sort.schema";
+
+export const getCustomers = async ({
+    page,
+    itemsPerPage,
+    sort,
+    order,
+    query,
+    status
+}: {
+    page: number;
+    itemsPerPage: number;
+    sort: CustomerKeys;
+    order: "asc" | "desc";
+    query?: string;
+    status?: CustomerStatus | "ALL";
+}) => {
+
+    const where: Prisma.CustomerWhereInput = {
+        ...(query && {
+            OR: [
+                { firstName: { contains: query, mode: "insensitive" } },
+                { lastName: { contains: query, mode: "insensitive" } },
+                { email: { contains: query, mode: "insensitive" } },
+            ],
+        }),
+        ...(status && status !== "ALL" && { status }),
+    };
+
+    const skip = (page - 1) * itemsPerPage;
+
+    try {
+        const [customers, count] = await prisma.$transaction([
+            prisma.customer.findMany({
+                where,
+                include: { classified: true },
+                orderBy: { [sort]: order },
+                skip,
+                take: itemsPerPage,
+            }),
+            prisma.customer.count({ where }),
+        ]);
+
+        return {
+            customers,
+            totalPages: Math.ceil(count / itemsPerPage),
+        };
+    } catch (error) {
+        console.error("Failed to get customers:", error);
+        return { customers: [], totalPages: 0 };
+    }
+};
 
 export const createCustomerAction = async (data: CreateCustomerType) => {
   try {

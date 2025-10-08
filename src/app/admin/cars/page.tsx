@@ -1,102 +1,106 @@
-import { validatePagination } from "@/app/schemas/pagination.schema";
+import { getCars } from "@/app/_actions/car";
 import { AdminCarFilterSchema } from "@/app/schemas/table-filter.schema";
 import {
   CarsTableSortSchema,
-  CarsTableSortType,
+  type CarsTableSortType,
   validateSortOrder,
 } from "@/app/schemas/table-sort.schema";
-import CarManageHeader from "@/components/admin/cars/cars-header";
-import CarsTableRow from "@/components/car/car-table-row";
 import CarTableHeader from "@/components/car/CarTableHeader";
+import CarsTableRow, { CarMobileCard } from "@/components/car/car-table-row";
+import CarManageHeader from "@/components/admin/cars/cars-header";
 import { AdminTableFooter } from "@/components/shared/admin-table-footer";
-import { Table, TableBody } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableFooter, TableRow } from "@/components/ui/table";
 import { routes } from "@/config/routes";
-import { CarKeys, PageProps } from "@/config/types";
+import type { CarKeys, PageProps } from "@/config/types";
 import { prisma } from "@/lib/prisma";
-import React from "react";
+import { validatePagination } from "@/lib/utils";
 
-const CarsPage = async (props: PageProps) => {
-  const searchParams = await props.searchParams;
-  const { page, itemsPerPage } = validatePagination({
-    page: (searchParams?.page as string) || "1",
-    itemsPerPage: (searchParams?.itemsPerPage as "10") || "10",
-  });
+export default async function CarsPage(props: PageProps) {
+    const searchParams = await props.searchParams;
 
-  const { sort, order } = validateSortOrder<CarsTableSortType>({
-    sort: searchParams?.sort as string as CarKeys,
-    order: (searchParams?.order as string as "asc") || "desc",
-    schema: CarsTableSortSchema,
-  });
-  const offset = (Number(page) - 1) * Number(itemsPerPage);
-  const { data, error } = AdminCarFilterSchema.safeParse(searchParams);
+    const { page, itemsPerPage } = validatePagination({
+      page: (searchParams?.page as string) || "1",
+      itemsPerPage: (searchParams?.itemsPerPage as "10") || "10",
+    });
 
-  if (error) {
-    console.error("Validation error: ", error);
-  }
+    const { sort, order } = validateSortOrder<CarsTableSortType>({
+      sort: searchParams?.sort as CarKeys,
+      order: searchParams?.order as "asc" | "desc",
+      schema: CarsTableSortSchema,
+    });
 
-  const cars = await prisma.classified.findMany({
-    where: {
-      ...(data?.q && {
-        title: {
-          contains: data.q,
-          mode: "insensitive",
-        },
-      }),
-      ...(data?.status &&
-        data.status !== "ALL" && {
-          status: data.status,
-        }),
-    },
-    orderBy: { [sort as string]: order as "asc" | "desc" },
-    include: {images: {
-      take: 1
-    }},
-    skip: offset,
-    take: Number(itemsPerPage),
-  });
+    const offset = (Number(page) - 1) * Number(itemsPerPage);
 
-  const count = await prisma.classified.count({
-     where: {
-      ...(data?.q && {
-        title: {
-          contains: data.q,
-          mode: "insensitive",
-        },
-      }),
-      ...(data?.status &&
-        data.status !== "ALL" && {
-          status: data.status,
-        }),
-    },
-  })
+    const { data, error } = AdminCarFilterSchema.safeParse(searchParams);
 
-  const totalPages = Math.ceil(count / Number(itemsPerPage));
-  return (
-    <>
-      <CarManageHeader searchParams={searchParams} />
-      <Table>
-        <CarTableHeader
-          sort={sort as CarKeys}
-          order={order as "asc" | "desc"}
-          
-        />
-        <TableBody>
-          {cars.map((car) => (
-            <CarsTableRow 
-              key={car.id}
-              car={car}/>
-          ))}
-        </TableBody>
-        <AdminTableFooter
-          disabled={cars.length === 0}
-          searchParams={searchParams}
-          totalPages={totalPages}
-          baseURL={routes.admin.cars}
-          cols={9}
-        />
-      </Table>
-    </>
-  );
-};
+    if (error) console.log("Validation error: ", error);
 
-export default CarsPage;
+    const where = {
+        ...(data?.q && { title: { contains: data.q, mode: "insensitive" } }),
+        ...(data?.status && data.status !== "ALL" && { status: data.status }),
+    }
+
+    const cars = await prisma.classified.findMany({
+      where,
+      orderBy: { [sort as string]: order as "asc" | "desc" },
+      include: { images: true },
+      skip: offset,
+      take: Number(itemsPerPage),
+    });
+
+    const count = await prisma.classified.count({
+      where
+   });
+
+    const totalPages = Math.ceil(count / Number(itemsPerPage));
+
+    return (
+      <>
+        <CarManageHeader searchParams={searchParams} />
+
+        {/* Desktop Table View */}
+        <div className="hidden md:block border rounded-lg">
+            <Table>
+                <CarTableHeader
+                    sort={sort as CarKeys}
+                    order={order as "asc" | "desc"}
+                />
+                <TableBody>
+                    {cars.map((car) => (
+                        <CarsTableRow
+                        key={car.id}
+                        car={car}/>
+                    ))}
+                </TableBody>
+                <TableFooter>
+                    <TableRow className="border-b-0 hover:bg-transparent">
+                        <TableCell colSpan={10} className="bg-sky-200 rounded-b-lg">
+                            <AdminTableFooter
+                                baseURL={routes.admin.cars}
+                                searchParams={searchParams}
+                                disabled={!cars.length}
+                                totalPages={totalPages}
+                            />
+                        </TableCell>
+                    </TableRow>
+                </TableFooter>
+            </Table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-4">
+            {cars.map((car) => (
+                <CarMobileCard key={car.id} car={car} />
+            ))}
+            <div className="p-4 bg-sky-200 rounded-lg">
+                <AdminTableFooter
+                    baseURL={routes.admin.cars}
+                    searchParams={searchParams}
+                    disabled={!cars.length}
+                    totalPages={totalPages}
+                />
+            </div>
+        </div>
+      </>
+    );
+}

@@ -1,80 +1,102 @@
-import { validatePagination } from "@/app/schemas/pagination.schema";
-import { AdminCustomerFilterSchema } from "@/app/schemas/table-filter.schema";
+import { getCustomers } from "@/app/_actions/customer";
 import {
-	CustomersTableSortSchema,
-	type CustomersTableSortType,
-	validateSortOrder,
+  AdminCustomerFilterSchema,
+} from "@/app/schemas/table-filter.schema";
+import {
+  CustomersTableSortSchema,
+  CustomerKeys,
+  validateSortOrder,
 } from "@/app/schemas/table-sort.schema";
 import { AdminCustomersHeader } from "@/components/admin/customers/customers-header";
 import { CustomersTableHeader } from "@/components/admin/customers/customers-table-header";
-import { CustomerTableRow } from "@/components/admin/customers/customers-table-rows";
+import {
+  CustomerTableRow,
+  CustomerMobileCard,
+} from "@/components/admin/customers/customers-table-rows";
 import { AdminTableFooter } from "@/components/shared/admin-table-footer";
-import { Table, TableBody } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableFooter, TableRow } from "@/components/ui/table";
 import { routes } from "@/config/routes";
-import type { CustomerKeys, PageProps } from "@/config/types";
-import { prisma } from "@/lib/prisma";
+import { PageProps } from "@/config/types";
+import { validatePagination } from "@/lib/utils";
 
-export default async function CustomersPage(props: PageProps) {
-	const searchParams = await props.searchParams;
+const CustomersPage = async (props: PageProps) => {
+  const searchParams = await props.searchParams;
 
-	const { page, itemsPerPage } = validatePagination({
-		page: (searchParams?.page as string) || "1",
-		itemsPerPage: (searchParams?.itemsPerPage as "10") || "10",
-	});
+  const { page, itemsPerPage } = validatePagination({
+    page: (searchParams?.page as string) || "1",
+    itemsPerPage: (searchParams?.itemsPerPage as "10") || "10",
+  });
 
-	const { sort, order } = validateSortOrder<CustomersTableSortType>({
-		sort: searchParams?.sort as CustomerKeys,
-		order: searchParams?.order as "asc" | "desc",
-		schema: CustomersTableSortSchema,
-	});
+  const { sort, order } = validateSortOrder<CustomerKeys>({
+    sort: searchParams?.sort as CustomerKeys,
+    order: searchParams?.order as "asc" | "desc",
+    schema: CustomersTableSortSchema,
+  });
 
-	const offset = (Number(page) - 1) * Number(itemsPerPage);
+  const { data, error } = AdminCustomerFilterSchema.safeParse(searchParams);
+  if (error) {
+    console.log(error);
+  }
 
-	const { data, error } = AdminCustomerFilterSchema.safeParse(searchParams);
+  const { customers, totalPages } = await getCustomers({
+    page,
+    itemsPerPage,
+    sort,
+    order,
+    query: data?.q,
+    status: data?.status,
+  });
 
-	if (error) console.log("Validation error: ", error);
+  if (!customers) {
+    return <div>No customers found</div>;
+  }
 
-	const customers = await prisma.customer.findMany({
-		where: {
-			...(data?.q && { title: { contains: data.q, mode: "insensitive" } }),
-			...(data?.status && data.status !== "ALL" && { status: data.status }),
-		},
-		orderBy: { [sort as string]: order as "asc" | "desc" },
-		include: { classified: true },
-		skip: offset,
-		take: Number(itemsPerPage),
-	});
+  return (
+    <>
+      <AdminCustomersHeader searchParams={searchParams} />
+        {/* Desktop Table View */}
+        <div className="hidden md:block border rounded-lg">
+            <Table>
+                <CustomersTableHeader
+                    sort={sort as CustomerKeys}
+                    order={order as "asc" | "desc"}
+                />
+                <TableBody>
+                {customers.map((customer) => (
+                <CustomerTableRow key={customer.id} {...customer} />
+                ))}
+                </TableBody>
+                <TableFooter>
+                    <TableRow className="border-b-0 hover:bg-transparent">
+                        <TableCell colSpan={10} className="bg-sky-200 rounded-b-lg">
+                            <AdminTableFooter
+                                baseURL={routes.admin.customers}
+                                searchParams={searchParams}
+                                disabled={!customers.length}
+                                totalPages={totalPages}
+                            />
+                        </TableCell>
+                    </TableRow>
+                </TableFooter>
+            </Table>
+        </div>
 
-	const count = await prisma.customer.count({
-		where: {
-			...(data?.q && { title: { contains: data.q, mode: "insensitive" } }),
-			...(data?.status && data.status !== "ALL" && { status: data.status }),
-		},
-	});
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-4">
+        {customers.map((customer) => (
+          <CustomerMobileCard key={customer.id} {...customer} />
+        ))}
+        <div className="p-4 bg-sky-200 rounded-lg">
+            <AdminTableFooter
+                baseURL={routes.admin.customers}
+                searchParams={searchParams}
+                disabled={!customers.length}
+                totalPages={totalPages}
+            />
+        </div>
+      </div>
+    </>
+  );
+};
 
-	const totalPages = Math.ceil(count / Number(itemsPerPage));
-
-	return (
-		<>
-			<AdminCustomersHeader searchParams={searchParams} />
-			<Table>
-				<CustomersTableHeader
-					sort={sort as CustomerKeys}
-					order={order as "asc" | "desc"}
-				/>
-				<TableBody>
-					{customers.map((customer) => (
-						<CustomerTableRow key={customer.id} {...customer} />
-					))}
-				</TableBody>
-				<AdminTableFooter
-					baseURL={routes.admin.customers}
-					searchParams={searchParams}
-					disabled={!customers.length}
-					totalPages={totalPages}
-					cols={10}
-				/>
-			</Table>
-		</>
-	);
-}
+export default CustomersPage;
