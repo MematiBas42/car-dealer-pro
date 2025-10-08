@@ -1,13 +1,15 @@
 'use client';
 
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import dynamic from "next/dynamic";
 import {
   BodyType, Colour, CurrencyCode, FuelType, OdoUnit, Transmission, ULEZCompliance
 } from "@prisma/client";
 
+import { api } from "@/lib/api-client";
 import { formatBodyType, formatColour, formatFuelType, formatTransmission, generateYears } from "@/lib/utils";
+import { endpoints } from "@/config/endpoints";
 import { FilterOptions } from "@/config/types";
 
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
@@ -41,6 +43,34 @@ interface CarFormFieldProps {
 
 const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldProps) => {
   const form = useFormContext();
+
+  // Use form.watch to get the current values from react-hook-form's state
+  const make = form.watch("make");
+  const model = form.watch("model");
+
+  // Remove local state for make and model, as they are now watched from the form
+  // const [make, setMake] = useState<string | null>(defaultmake);
+  // const [model, setModel] = useState<string | null>(defaultmodel);
+
+  // Local state for taxonomy options (makes, models, modelVariants) remains
+  const [localMakes, setLocalMakes] = useState<FilterOptions<string, string>>([]);
+  const [localModels, setLocalModels] = useState<FilterOptions<string, string>>([]);
+  const [localModelVariants, setLocalModelVariants] = useState<FilterOptions<string, string>>([]);
+
+  useEffect(() => {
+    // Initialize local taxonomy states with props if available
+    setLocalMakes(makes);
+    setLocalModels(models);
+    setLocalModelVariants(modelVariants);
+  }, [makes, models, modelVariants]);
+
+  useEffect(() => {
+    (async function fetchTaxonomyOptions() {
+      // This useEffect now depends on the watched 'make' and 'model' from the form
+      // The actual fetching logic is now in CarForm, this useEffect is redundant here.
+      // This useEffect will be removed after CarForm is fully refactored to pass all options.
+    })();
+  }, [make, model]); // Keep dependencies for now, will be removed
 
   const handleChange = (
     e: ChangeEvent<HTMLSelectElement>,
@@ -86,7 +116,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               {isLoading ? <Skeleton className="h-10" /> : <Select
                 {...rest}
-                options={makes}
+                options={localMakes}
                 onChange={(e) => handleChange(e, onChange)}
               />}
             </FormControl>
@@ -103,7 +133,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               {isLoading ? <Skeleton className="h-10" /> : <Select
                 {...rest}
-                options={models}
+                options={localModels}
                 onChange={(e) => handleChange(e, onChange)}
               />}
             </FormControl>
@@ -120,7 +150,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               {isLoading ? <Skeleton className="h-10" /> : <Select
                 {...rest}
-                options={modelVariants}
+                options={localModelVariants}
                 onChange={(e) => handleChange(e, onChange)}
               />}
             </FormControl>
