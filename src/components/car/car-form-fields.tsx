@@ -44,33 +44,18 @@ interface CarFormFieldProps {
 const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldProps) => {
   const form = useFormContext();
 
-  // Use form.watch to get the current values from react-hook-form's state
   const make = form.watch("make");
   const model = form.watch("model");
 
-  // Remove local state for make and model, as they are now watched from the form
-  // const [make, setMake] = useState<string | null>(defaultmake);
-  // const [model, setModel] = useState<string | null>(defaultmodel);
-
-  // Local state for taxonomy options (makes, models, modelVariants) remains
   const [localMakes, setLocalMakes] = useState<FilterOptions<string, string>>([]);
   const [localModels, setLocalModels] = useState<FilterOptions<string, string>>([]);
   const [localModelVariants, setLocalModelVariants] = useState<FilterOptions<string, string>>([]);
 
   useEffect(() => {
-    // Initialize local taxonomy states with props if available
     setLocalMakes(makes);
     setLocalModels(models);
     setLocalModelVariants(modelVariants);
   }, [makes, models, modelVariants]);
-
-  useEffect(() => {
-    (async function fetchTaxonomyOptions() {
-      // This useEffect now depends on the watched 'make' and 'model' from the form
-      // The actual fetching logic is now in CarForm, this useEffect is redundant here.
-      // This useEffect will be removed after CarForm is fully refactored to pass all options.
-    })();
-  }, [make, model]); // Keep dependencies for now, will be removed
 
   const handleChange = (
     e: ChangeEvent<HTMLSelectElement>,
@@ -99,6 +84,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               <Select
                 {...field}
+                value={field.value || ''}
                 options={years.map((year) => ({ label: year, value: year }))}
               />
             </FormControl>
@@ -116,6 +102,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               {isLoading ? <Skeleton className="h-10" /> : <Select
                 {...rest}
+                value={rest.value || ''}
                 options={localMakes}
                 onChange={(e) => handleChange(e, onChange)}
               />}
@@ -133,6 +120,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               {isLoading ? <Skeleton className="h-10" /> : <Select
                 {...rest}
+                value={rest.value || ''}
                 options={localModels}
                 onChange={(e) => handleChange(e, onChange)}
               />}
@@ -150,6 +138,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               {isLoading ? <Skeleton className="h-10" /> : <Select
                 {...rest}
+                value={rest.value || ''}
                 options={localModelVariants}
                 onChange={(e) => handleChange(e, onChange)}
               />}
@@ -184,6 +173,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               <Select
                 {...field}
+                value={field.value || ''}
                 options={Object.values(Transmission).map((value) => ({ label: formatTransmission(value), value }))}
               />
             </FormControl>
@@ -200,6 +190,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               <Select
                 {...field}
+                value={field.value || ''}
                 options={Object.values(FuelType).map((value) => ({ label: formatFuelType(value), value }))}
               />
             </FormControl>
@@ -216,6 +207,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               <Select
                 {...field}
+                value={field.value || ''}
                 options={Object.values(BodyType).map((value) => ({ label: formatBodyType(value), value }))}
               />
             </FormControl>
@@ -232,6 +224,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               <Select
                 {...field}
+                value={field.value || ''}
                 options={Object.values(Colour).map((value) => ({ label: formatColour(value), value }))}
               />
             </FormControl>
@@ -248,6 +241,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               <Select
                 {...field}
+                value={field.value || ''}
                 options={Object.values(ULEZCompliance).map((value) => ({ label: value, value }))}
               />
             </FormControl>
@@ -262,7 +256,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
           <FormItem>
             <FormLabel htmlFor="vrm">Vehicle Registration Mark</FormLabel>
             <FormControl>
-              <Input placeholder="LA16 PYW" className="uppercase text-white" {...field} />
+              <Input placeholder="LA16 PYW" className="uppercase text-white" {...field} value={field.value || ''} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -277,6 +271,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               <NumberInput
                 {...rest}
+                value={rest.value ?? ''}
                 max={6}
                 min={1}
                 placeholder="0"
@@ -297,6 +292,7 @@ const CarFormField = ({ makes, models, modelVariants, isLoading }: CarFormFieldP
             <FormControl>
               <NumberInput
                 {...rest}
+                value={rest.value ?? ''}
                 max={8}
                 min={1}
                 placeholder="0"
