@@ -19,7 +19,7 @@ export const AdminSidebarContent = ({ onLinkClick }: { onLinkClick?: () => void 
       <div className="flex flex-col h-full bg-gray-950 text-white">
           <div className="p-4 border-b border-gray-800 flex justify-center h-[69px] items-center">
                <Link href={routes.home} onClick={onLinkClick}>
-                  <Image src="/logo.svg" alt="Logo" width={150} height={40} className="object-contain" />
+                  <Image src="/assets/logo.png" alt="RIM GLOBAL Logo" width={160} height={50} className="object-contain" />
               </Link>
           </div>
           <nav className="flex-grow p-4 space-y-2">
@@ -73,7 +73,7 @@ const AdminSidebar = () => {
                 <AnimatePresence mode="wait">
                     {isExpanded ? (
                         <motion.div key="full-logo" initial={{opacity: 0, x: -20}} animate={{opacity: 1, x: 0}} exit={{opacity: 0, x: -20}} transition={{duration: 0.3, delay: 0.1}}>
-                            <Image src="/logo.svg" alt="Logo" width={150} height={40} />
+                            <Image src="/assets/logo.png" alt="RIM GLOBAL Logo" width={160} height={50} />
                         </motion.div>
                     ) : (
                         <motion.div key="icon-logo" initial={{opacity: 0, scale: 0.8}} animate={{opacity: 1, scale: 1}} exit={{opacity: 0, scale: 0.8}} transition={{duration: 0.2}}>
