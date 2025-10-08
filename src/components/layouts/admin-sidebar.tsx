@@ -69,7 +69,7 @@ const AdminSidebar = () => {
       transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
     >
         <div className="p-4 border-b border-gray-800 flex items-center justify-center h-[69px] flex-shrink-0 overflow-hidden">
-             <Link href={routes.home}>
+             <Link href={routes.home} className="flex items-center justify-center">
                 <AnimatePresence mode="wait">
                     {isExpanded ? (
                         <motion.div key="full-logo" initial={{opacity: 0, x: -20}} animate={{opacity: 1, x: 0}} exit={{opacity: 0, x: -20}} transition={{duration: 0.3, delay: 0.1}}>
