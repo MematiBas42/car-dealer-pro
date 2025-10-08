@@ -95,7 +95,7 @@ const EditCustomerForm = ({ customer }: EditCustomerFormProps) => {
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} value={field.value || ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,7 +108,7 @@ const EditCustomerForm = ({ customer }: EditCustomerFormProps) => {
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} value={field.value || ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -121,7 +121,7 @@ const EditCustomerForm = ({ customer }: EditCustomerFormProps) => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} value={field.value || ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -134,7 +134,7 @@ const EditCustomerForm = ({ customer }: EditCustomerFormProps) => {
                 <FormItem>
                   <FormLabel>Mobile</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} value={field.value || ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -151,7 +151,7 @@ const EditCustomerForm = ({ customer }: EditCustomerFormProps) => {
                 <FormItem>
                   <FormLabel>Car Title</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="e.g., 2023 Toyota Camry" />
+                    <Input {...field} value={field.value || ''} placeholder="e.g., 2023 Toyota Camry" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -177,7 +177,7 @@ const EditCustomerForm = ({ customer }: EditCustomerFormProps) => {
                 <FormItem>
                   <FormLabel>Notes</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Customer notes..." className="bg-transparent text-white" rows={5} />
+                    <Textarea {...field} value={field.value || ''} placeholder="Customer notes..." className="bg-transparent text-white" rows={5} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -192,6 +192,7 @@ const EditCustomerForm = ({ customer }: EditCustomerFormProps) => {
                   <FormControl>
                     <Select
                       {...field}
+                      value={field.value || ''}
                       options={Object.values(CustomerStatus).map((value) => ({
                         label: formatCustomerStatus(value),
                         value,
